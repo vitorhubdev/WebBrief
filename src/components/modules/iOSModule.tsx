@@ -49,7 +49,7 @@ export function IOSModule({ formData, updateField, toggleArrayField }: IOSModule
         <Label className="text-base font-bold">Arquitetura de UI e Framework</Label>
         <RadioGroup
           value={formData.iosUI}
-          onValueChange={(v) => updateField('iosUI', v as any)}
+          onValueChange={(v) => updateField('iosUI', v as FormData['iosUI'])}
           className="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
           <div className="flex items-start space-x-3 p-4 rounded-2xl border-2 border-primary/5 hover:border-primary/20 hover:bg-primary/5 cursor-pointer transition-all">
