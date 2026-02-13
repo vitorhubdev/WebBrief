@@ -29,6 +29,7 @@ function App() {
     generatedPrompt,
     showResult,
     currentStep,
+    setCurrentStep,
     updateField,
     toggleArrayField,
     loadPreset,
@@ -41,33 +42,27 @@ function App() {
 
   const handleNext = () => {
     if (currentStep < steps.length) {
-      // Validação básica
-      if (currentStep === 1 && (!formData.appType || !formData.stack)) {
-        return;
-      }
-      if (currentStep === 2 && !formData.projectName) {
-        return;
-      }
-      // Avançar
-      const nextStep = currentStep + 1;
-      // Pular módulo específico se não tiver tipo selecionado
-      if (nextStep === 6 && !formData.appType) {
-        return;
-      }
-      // Atualizar step
+      if (!canProceed()) return;
+
+      setCurrentStep(prev => prev + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handlePrev = () => {
     if (currentStep > 1) {
+      setCurrentStep(prev => prev - 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handleLoadPreset = (preset: Preset) => {
     loadPreset(preset);
-    // Avançar para identidade após carregar preset
+    // Avançar para identidade após carregar preset se estiver no passo 1
+    if (currentStep === 1) {
+      setCurrentStep(2);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const canProceed = () => {
@@ -144,8 +139,8 @@ function App() {
         <Header onExport={exportConfig} onImport={importConfig} onClear={clearSavedData} />
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
-            <Resultado 
-              prompt={generatedPrompt} 
+            <Resultado
+              prompt={generatedPrompt}
               onReset={resetForm}
               onExport={exportConfig}
             />
@@ -158,7 +153,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <Header onExport={exportConfig} onImport={importConfig} onClear={clearSavedData} />
-      
+
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Hero */}
@@ -172,7 +167,7 @@ function App() {
               <span className="text-primary">qualquer aplicação</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Websites, apps mobile, CLI, GUI desktop, containers e APIs. 
+              Websites, apps mobile, CLI, GUI desktop, containers e APIs.
               Responda algumas perguntas e gere um prompt técnico completo.
             </p>
           </div>
@@ -200,7 +195,7 @@ function App() {
           <Card>
             <CardContent className="pt-6">
               {renderStep()}
-              
+
               {/* Navigation */}
               <div className="flex justify-between mt-8 pt-6 border-t">
                 <Button
@@ -212,10 +207,10 @@ function App() {
                   <ChevronLeft className="w-4 h-4" />
                   Anterior
                 </Button>
-                
+
                 {currentStep === steps.length ? (
-                  <Button 
-                    onClick={generatePrompt} 
+                  <Button
+                    onClick={generatePrompt}
                     className="flex items-center gap-2"
                     disabled={!formData.appType}
                   >
@@ -223,8 +218,8 @@ function App() {
                     Gerar Prompt
                   </Button>
                 ) : (
-                  <Button 
-                    onClick={handleNext} 
+                  <Button
+                    onClick={handleNext}
                     className="flex items-center gap-2"
                     disabled={!canProceed()}
                   >
