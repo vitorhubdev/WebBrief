@@ -2,7 +2,7 @@
 export type AppType = 'website' | 'android' | 'ios' | 'cli' | 'gui' | 'docker' | 'api';
 
 // Stacks/Linguagens suportadas
-export type Stack = 'go' | 'rust' | 'python' | 'typescript' | 'cpp' | 'csharp' | 'kotlin' | 'swift' | 'java';
+export type Stack = 'go' | 'rust' | 'python' | 'typescript' | 'cpp' | 'csharp' | 'kotlin' | 'swift' | 'java' | 'dart';
 
 // Interface principal do formulário
 export interface FormData {
@@ -116,6 +116,7 @@ export interface FormData {
 
   // === MÓDULO: API ===
   apiType: 'rest' | 'graphql' | 'grpc' | 'websocket';
+  apiFramework: string;
   apiDomain: string;
   apiResources: string;
   apiAuth: 'nenhuma' | 'jwt' | 'oauth' | 'apikey' | 'rbac';
@@ -126,6 +127,7 @@ export interface FormData {
   apiVersioning: 'sim' | 'nao';
   apiDocs: 'sim' | 'nao';
   apiJobs: 'sim' | 'nao';
+  apiSchema: string;
 
   // === CRÉDITOS ===
   creditsText: string;
@@ -229,6 +231,7 @@ export const initialFormData: FormData = {
   dockerServices: '',
   // API
   apiType: 'rest',
+  apiFramework: '',
   apiDomain: '',
   apiResources: '',
   apiAuth: 'jwt',
@@ -239,6 +242,7 @@ export const initialFormData: FormData = {
   apiVersioning: 'sim',
   apiDocs: 'sim',
   apiJobs: 'nao',
+  apiSchema: '',
   // Créditos
   creditsText: '',
   creditsLocation: 'readme',
@@ -385,14 +389,15 @@ export const presets: Preset[] = [
     }
   },
   {
-    id: 'api-rest',
-    name: 'API REST',
-    description: 'Backend com autenticação JWT',
-    icon: 'Server',
+    id: 'api-fiber',
+    name: 'API Ultra-rápida (Go Fiber)',
+    description: 'Framework minimalista v3 - Estilo Express',
+    icon: 'Zap',
     appType: 'api',
     stack: 'go',
     data: {
       apiType: 'rest',
+      apiFramework: 'Fiber v3',
       apiAuth: 'jwt',
       apiDatabase: 'postgres',
       apiCache: 'redis',
@@ -405,7 +410,71 @@ export const presets: Preset[] = [
       storageType: 'postgres',
       scope: 'completo',
       codeQuality: 'arquitetura',
-      tests: 'integracao',
+    }
+  },
+  {
+    id: 'api-fastapi',
+    name: 'API Inteligente (FastAPI)',
+    description: 'Python com tipagem forte e performance',
+    icon: 'Server',
+    appType: 'api',
+    stack: 'python',
+    data: {
+      apiType: 'rest',
+      apiFramework: 'FastAPI',
+      apiAuth: 'jwt',
+      apiDatabase: 'postgres',
+      apiCache: 'redis',
+      apiPagination: 'sim',
+      apiDocs: 'sim',
+      hasAuth: 'sim',
+      storesData: 'sim',
+      scope: 'mvp',
+    }
+  },
+  {
+    id: 'api-axum',
+    name: 'Backend Robusto (Rust Axum)',
+    description: 'Segurança extrema e performance Tokio',
+    icon: 'Shield',
+    appType: 'api',
+    stack: 'rust',
+    data: {
+      apiType: 'rest',
+      apiFramework: 'Axum v0.8',
+      apiAuth: 'jwt',
+      apiDatabase: 'postgres',
+      apiCache: 'redis',
+      apiPagination: 'sim',
+      apiVersioning: 'sim',
+      apiDocs: 'sim',
+      hasAuth: 'sim',
+      storesData: 'sim',
+      scope: 'completo',
+      codeQuality: 'arquitetura',
+    }
+  },
+  {
+    id: 'api-aspnet',
+    name: 'Microserviço Enterprise (.NET 10)',
+    description: 'ASP.NET Core moderno e escalável',
+    icon: 'Layers',
+    appType: 'api',
+    stack: 'csharp',
+    data: {
+      apiType: 'rest',
+      apiFramework: 'ASP.NET Core 10',
+      apiAuth: 'rbac',
+      apiDatabase: 'postgres',
+      apiCache: 'redis',
+      apiPagination: 'sim',
+      apiRateLimit: 'sim',
+      apiVersioning: 'sim',
+      apiDocs: 'sim',
+      hasAuth: 'sim',
+      storesData: 'sim',
+      scope: 'completo',
+      codeQuality: 'arquitetura',
     }
   },
   {
@@ -425,21 +494,59 @@ export const presets: Preset[] = [
     }
   },
   {
-    id: 'desktop-app',
-    name: 'App Desktop',
-    description: 'Aplicação multi-plataforma',
+    id: 'tauri-desktop',
+    name: 'App Desktop Moderno (Tauri)',
+    description: 'Interface Web com performance Rust (Tauri 2.0)',
     icon: 'Monitor',
     appType: 'gui',
-    stack: 'typescript',
+    stack: 'rust',
     data: {
       guiFramework: 'tauri',
-      guiPersistence: 'config',
+      guiPersistence: 'banco',
       guiPackaging: 'installer',
       guiAutoUpdate: 'sim',
       hasAuth: 'nao',
       storesData: 'sim',
       storageType: 'sqlite',
+      scope: 'completo',
+      codeQuality: 'arquitetura',
+    }
+  },
+  {
+    id: 'wails-go-desktop',
+    name: 'Desktop de Alta Performance (Wails)',
+    description: 'Backend em Go com frontend Web (Wails v3)',
+    icon: 'Terminal',
+    appType: 'gui',
+    stack: 'go',
+    data: {
+      guiFramework: 'wails',
+      guiPersistence: 'config',
+      guiPackaging: 'portable',
+      hasAuth: 'nao',
+      storesData: 'sim',
+      storageType: 'sqlite',
       scope: 'mvp',
+    }
+  },
+  {
+    id: 'electron-enterprise',
+    name: 'App Desktop Corporativo (Electron)',
+    description: 'Ecossistema TypeScript maduro e robusto',
+    icon: 'Code2',
+    appType: 'gui',
+    stack: 'typescript',
+    data: {
+      guiFramework: 'electron',
+      guiPersistence: 'banco',
+      guiPackaging: 'ambos',
+      guiAutoUpdate: 'sim',
+      hasAuth: 'sim',
+      authType: 'sso',
+      storesData: 'sim',
+      storageType: 'sqlite',
+      scope: 'completo',
+      codeQuality: 'arquitetura',
     }
   },
   {
@@ -451,6 +558,7 @@ export const presets: Preset[] = [
     stack: 'go',
     data: {
       apiType: 'rest',
+      apiFramework: 'Fiber v3',
       apiAuth: 'jwt',
       apiDatabase: 'postgres',
       apiResources: 'Auth, Users, Permissions',
@@ -496,6 +604,62 @@ export const presets: Preset[] = [
       features: ['auth', 'pagamentos', 'geolocalizacao'],
     }
   },
+  {
+    id: 'flutter-app',
+    name: 'App Cross-platform (Flutter)',
+    description: 'Aplicativo de alta performance para Android e iOS',
+    icon: 'Smartphone',
+    appType: 'android',
+    stack: 'dart',
+    data: {
+      androidUI: 'compose', // Representa a natureza declarativa do Flutter
+      androidMinVersion: '21',
+      androidOrientation: 'ambos',
+      androidOffline: 'sync',
+      hasAuth: 'sim',
+      storesData: 'sim',
+      storageType: 'sqlite',
+      scope: 'mvp',
+      features: ['auth', 'notificacoes', 'geolocalizacao'],
+    }
+  },
+  {
+    id: 'maui-enterprise',
+    name: 'App Corporativo (MAUI)',
+    description: 'Solução robusta .NET para Windows e Android',
+    icon: 'Monitor',
+    appType: 'gui',
+    stack: 'csharp',
+    data: {
+      guiFramework: 'maui',
+      guiPersistence: 'banco',
+      guiPackaging: 'installer',
+      hasAuth: 'sim',
+      authType: 'sso',
+      storesData: 'sim',
+      storageType: 'sqlite',
+      scope: 'completo',
+      codeQuality: 'arquitetura',
+    }
+  },
+  {
+    id: 'local-ai-agent',
+    name: 'Agente de IA Local',
+    description: 'Automação com Python e Ollama/LangChain',
+    icon: 'Cpu',
+    appType: 'cli',
+    stack: 'python',
+    data: {
+      cliPurpose: 'Agente inteligente para automação de tarefas locais',
+      cliInteractive: 'sim',
+      features: ['api-externa', 'busca'],
+      hasAuth: 'nao',
+      storesData: 'sim',
+      storageType: 'sqlite',
+      scope: 'completo',
+      notes: 'Integração direta com Ollama API e LangChain para processamento local.',
+    }
+  },
 ];
 
 // Opções para selects
@@ -512,10 +676,10 @@ export const appTypeOptions = [
 // Mapeamento de compatibilidade: quais stacks funcionam com cada tipo de app
 export const stackCompatibility: Record<AppType, Stack[]> = {
   website: ['typescript', 'python', 'go'],
-  android: ['kotlin', 'java'],
-  ios: ['swift'],
-  cli: ['go', 'rust', 'python', 'typescript', 'cpp', 'csharp'],
-  gui: ['csharp', 'cpp', 'typescript', 'rust', 'python', 'kotlin', 'swift', 'java'],
+  android: ['kotlin', 'java', 'csharp', 'dart', 'typescript'], // C# (MAUI), Dart (Flutter), TS (React Native)
+  ios: ['swift', 'csharp', 'dart', 'typescript'], // C# (MAUI), Dart (Flutter), TS (React Native)
+  cli: ['go', 'rust', 'python', 'typescript', 'cpp', 'csharp', 'dart'],
+  gui: ['csharp', 'cpp', 'typescript', 'rust', 'python', 'kotlin', 'swift', 'java', 'dart'], // C# (MAUI/Avalonia), Dart (Flutter)
   docker: ['go', 'rust', 'python', 'typescript', 'java', 'csharp'],
   api: ['go', 'rust', 'python', 'typescript', 'java', 'csharp'],
 };
@@ -526,10 +690,11 @@ export const stackOptions = [
   { value: 'python', label: 'Python', desc: 'IA, Automação e Prototipagem rápida' },
   { value: 'typescript', label: 'TypeScript', desc: 'Ecossistema JS/Node - Web e Desktop' },
   { value: 'cpp', label: 'C++', desc: 'Software de baixo nível e alto desempenho' },
-  { value: 'csharp', label: 'C#', desc: 'Ecossistema .NET (Windows e Games)' },
-  { value: 'kotlin', label: 'Kotlin', desc: 'Android Moderno e PC (Compose)' },
-  { value: 'swift', label: 'Swift', desc: 'Apple (iOS, macOS, iPadOS)' },
+  { value: 'csharp', label: 'C#', desc: 'MAUI, Unity e Ecossistema .NET' },
+  { value: 'kotlin', label: 'Kotlin', desc: 'Android Moderno e Multiplatform (KMP)' },
+  { value: 'swift', label: 'Swift', desc: 'Ecossistema Apple e SwiftUI' },
   { value: 'java', label: 'Java', desc: 'Sistemas corporativos e legados' },
+  { value: 'dart', label: 'Dart', desc: 'Performance nativa com Flutter' },
 ];
 
 export const featureOptions = [

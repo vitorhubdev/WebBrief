@@ -23,7 +23,7 @@ export function BasicInfo({ formData, updateField, toggleArrayField }: BasicInfo
           <FileText className="w-5 h-5 text-primary" />
           <h3 className="text-lg font-semibold">Identidade do Projeto</h3>
         </div>
-        
+
         <div className="grid gap-4">
           <div className="space-y-2">
             <Label htmlFor="projectName">Nome do projeto/produto *</Label>

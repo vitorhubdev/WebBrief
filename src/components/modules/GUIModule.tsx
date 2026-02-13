@@ -21,11 +21,12 @@ export function GUIModule({ formData, updateField }: GUIModuleProps) {
         <Label>Framework preferido</Label>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {[
-            { value: 'tauri', label: 'Tauri', desc: 'Rust + Web' },
-            { value: 'electron', label: 'Electron', desc: 'Node.js' },
-            { value: 'flutter', label: 'Flutter', desc: 'Dart' },
-            { value: 'qt', label: 'Qt', desc: 'C++' },
-            { value: 'maui', label: '.NET MAUI', desc: 'C#' },
+            { value: 'tauri', label: 'Tauri', desc: 'Rust + Web (Ultra-leve)' },
+            { value: 'electron', label: 'Electron', desc: 'Node.js + Chromium' },
+            { value: 'wails', label: 'Wails', desc: 'Go + Web (Nativo)' },
+            { value: 'flutter', label: 'Flutter', desc: 'Dart (UI fluida)' },
+            { value: 'qt', label: 'Qt', desc: 'C++ (Legacy/Power)' },
+            { value: 'maui', label: '.NET MAUI', desc: 'C# (Enterprise)' },
             { value: 'outro', label: 'Outro', desc: 'Especificar' },
           ].map((fw) => (
             <div

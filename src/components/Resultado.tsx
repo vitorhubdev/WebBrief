@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Check, Copy, RotateCcw, Download, Sparkles, FileJson } from 'lucide-react';
+import { Check, Copy, RotateCcw, Download, Sparkles, FileJson, Zap, HelpCircle } from 'lucide-react';
 
 interface ResultadoProps {
   prompt: string;
@@ -36,99 +35,123 @@ export function Resultado({ prompt, onReset, onExport }: ResultadoProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <Card className="border-primary/20">
-        <CardHeader className="bg-primary/5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-primary-foreground" />
+    <section className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+      <div className="glass-card rounded-[2.5rem] overflow-hidden border-primary/10">
+        <header className="p-8 sm:p-10 bg-primary/5 border-b border-primary/10">
+          <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
+            <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20 animate-float">
+              <Sparkles className="w-8 h-8 text-primary-foreground fill-white/20" />
             </div>
-            <div>
-              <CardTitle className="text-xl">Prompt Gerado!</CardTitle>
-              <CardDescription>
-                Copie e cole em qualquer IA (ChatGPT, Claude, Gemini...)
-              </CardDescription>
+            <div className="space-y-1">
+              <h2 className="text-3xl font-bold tracking-tight">Prompt Gerado!</h2>
+              <p className="text-muted-foreground font-medium">
+                Sua arquitetura está pronta para ser entregue à IA.
+              </p>
             </div>
           </div>
-        </CardHeader>
-        <CardContent className="pt-6 space-y-4">
-          <div className="relative">
+        </header>
+
+        <div className="p-8 sm:p-10 space-y-8">
+          <div className="group relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/10 to-indigo-500/10 rounded-2xl blur opacity-25 group-hover:opacity-100 transition duration-500" />
             <Textarea
               value={prompt}
               readOnly
-              className="min-h-[400px] font-mono text-sm bg-muted/50 resize-none"
+              className="relative min-h-[450px] font-mono text-sm bg-muted/30 border-primary/5 rounded-2xl p-6 resize-none focus-visible:ring-primary/20 leading-relaxed overflow-hidden break-words whitespace-pre-wrap"
+              aria-label="Conteúdo do prompt gerado"
             />
           </div>
-          
-          <div className="flex flex-wrap gap-3">
+
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4">
             <Button
               onClick={handleCopy}
-              className="flex items-center gap-2"
-              variant={copied ? "default" : "default"}
+              className={`h-14 px-8 rounded-2xl transition-all duration-300 font-bold gap-3 shadow-xl ${copied
+                ? 'bg-emerald-500 hover:bg-emerald-600 scale-105 shadow-emerald-500/20'
+                : 'bg-primary hover:bg-primary/90 shadow-primary/20 hover:scale-105'
+                }`}
             >
               {copied ? (
                 <>
-                  <Check className="w-4 h-4" />
-                  Copiado!
+                  <Check className="w-5 h-5 stroke-[3px]" />
+                  <span>Copiado com sucesso!</span>
                 </>
               ) : (
                 <>
-                  <Copy className="w-4 h-4" />
-                  Copiar Prompt
+                  <Copy className="w-5 h-5" />
+                  <span>Copiar Prompt</span>
                 </>
               )}
             </Button>
-            
-            <Button
-              onClick={handleDownload}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <Download className="w-4 h-4" />
-              Baixar .md
-            </Button>
 
-            <Button
-              onClick={onExport}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <FileJson className="w-4 h-4" />
-              Exportar Config
-            </Button>
-            
-            <Button
-              onClick={onReset}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <RotateCcw className="w-4 h-4" />
-              Novo
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                onClick={handleDownload}
+                variant="outline"
+                className="h-14 px-6 rounded-2xl border-primary/10 hover:bg-primary/5 hover:border-primary/20 font-bold gap-2 group"
+                aria-label="Baixar prompt em formato markdown"
+              >
+                <Download className="w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
+                <span className="hidden sm:inline">Baixar .md</span>
+              </Button>
+
+              <Button
+                onClick={onExport}
+                variant="outline"
+                className="h-14 px-6 rounded-2xl border-primary/10 hover:bg-primary/5 hover:border-primary/20 font-bold gap-2 group"
+                aria-label="Exportar configurações em JSON"
+              >
+                <FileJson className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <span className="hidden sm:inline">Exportar Config</span>
+              </Button>
+
+              <Button
+                onClick={onReset}
+                variant="ghost"
+                className="h-14 px-6 rounded-2xl text-muted-foreground hover:text-primary hover:bg-primary/5 font-bold gap-2"
+              >
+                <RotateCcw className="w-5 h-5" />
+                <span>Novo</span>
+              </Button>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Como usar</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <ol className="space-y-2 list-decimal list-inside text-muted-foreground">
-            <li><span className="text-foreground">Copie o prompt</span> acima</li>
-            <li><span className="text-foreground">Abra sua IA preferida</span> (ChatGPT, Claude, etc.)</li>
-            <li><span className="text-foreground">Cole e envie</span> o prompt</li>
-            <li><span className="text-foreground">Aguarde</span> a geração do código</li>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <article className="p-8 rounded-[2rem] glass border-primary/5 space-y-4">
+          <h3 className="text-xl font-bold flex items-center gap-2">
+            <Zap className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+            Próximos Passos
+          </h3>
+          <ol className="space-y-3 list-none">
+            {[
+              { text: "Copie o prompt acima", icon: "1" },
+              { text: "Abra o ChatGPT, Claude ou Gemini", icon: "2" },
+              { text: "Cole e envie para processamento", icon: "3" },
+              { text: "Refine conforme as sugestões da IA", icon: "4" }
+            ].map((step, i) => (
+              <li key={i} className="flex items-center gap-4 text-muted-foreground text-sm font-medium">
+                <span className="w-6 h-6 rounded-lg bg-background flex items-center justify-center text-[10px] font-black border border-primary/10 text-primary">
+                  {step.icon}
+                </span>
+                {step.text}
+              </li>
+            ))}
           </ol>
-          
-          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg mt-4">
-            <p className="text-sm text-amber-800">
-              <strong>Dica:</strong> Quanto mais detalhadas suas respostas, mais assertivo será o resultado. 
-              O prompt inclui todas as regras técnicas para um projeto profissional.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+        </article>
+
+        <article className="p-8 rounded-[2rem] bg-amber-500/5 border border-amber-500/10 space-y-4">
+          <h3 className="text-xl font-bold flex items-center gap-2 text-amber-900 dark:text-amber-200">
+            <HelpCircle className="w-5 h-5 text-amber-500" />
+            Dica Importante
+          </h3>
+          <p className="text-sm text-amber-800/80 dark:text-amber-200/60 leading-relaxed font-medium">
+            O prompt gerado inclui uma estrutura em camadas que prioriza a
+            <strong className="text-amber-900 dark:text-amber-100"> manutenibilidade e escalabilidade</strong>.
+            Se a IA tentar simplificar demais, peça para ela manter a arquitetura planejada original.
+          </p>
+        </article>
+      </div>
+    </section>
   );
 }

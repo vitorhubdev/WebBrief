@@ -37,9 +37,8 @@ export function AndroidModule({ formData, updateField, toggleArrayField }: Andro
             <div
               key={version}
               onClick={() => updateField('androidMinVersion', version)}
-              className={`p-3 rounded-lg border cursor-pointer transition-colors text-center ${
-                formData.androidMinVersion === version ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
-              }`}
+              className={`p-3 rounded-lg border cursor-pointer transition-colors text-center ${formData.androidMinVersion === version ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
+                }`}
             >
               <span className="text-sm font-medium">API {version}</span>
             </div>
@@ -47,26 +46,51 @@ export function AndroidModule({ formData, updateField, toggleArrayField }: Andro
         </div>
       </div>
 
-      {/* UI */}
-      <div className="space-y-3">
-        <Label>Tecnologia de UI</Label>
+      <div className="space-y-4">
+        <Label className="text-base font-bold">Arquitetura de UI e Framework</Label>
         <RadioGroup
           value={formData.androidUI}
-          onValueChange={(v) => updateField('androidUI', v as 'xml' | 'compose')}
-          className="grid grid-cols-2 gap-3"
+          onValueChange={(v) => updateField('androidUI', v as any)}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
-          <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer">
+          <div className="flex items-start space-x-3 p-4 rounded-2xl border-2 border-primary/5 hover:border-primary/20 hover:bg-primary/5 cursor-pointer transition-all group">
             <RadioGroupItem value="compose" id="ui-compose" className="mt-1" />
-            <div>
-              <Label htmlFor="ui-compose" className="cursor-pointer font-medium">Jetpack Compose</Label>
-              <p className="text-xs text-muted-foreground">Moderno, recomendado pelo Google</p>
+            <div className="flex-1">
+              <Label htmlFor="ui-compose" className="cursor-pointer font-bold flex items-center gap-2">
+                Jetpack Compose
+                <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full uppercase">Google</span>
+              </Label>
+              <p className="text-xs text-muted-foreground mt-1">Nativo moderno com Kotlin. Recomendado para novos apps.</p>
             </div>
           </div>
-          <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer">
+
+          <div className="flex items-start space-x-3 p-4 rounded-2xl border-2 border-primary/5 hover:border-primary/20 hover:bg-primary/5 cursor-pointer transition-all">
             <RadioGroupItem value="xml" id="ui-xml" className="mt-1" />
-            <div>
-              <Label htmlFor="ui-xml" className="cursor-pointer font-medium">XML tradicional</Label>
-              <p className="text-xs text-muted-foreground">Legado, mais estável</p>
+            <div className="flex-1">
+              <Label htmlFor="ui-xml" className="cursor-pointer font-bold">XML (Tradicional)</Label>
+              <p className="text-xs text-muted-foreground mt-1">Abordagem clássica imperativa. Ideal para suporte a sistemas legados.</p>
+            </div>
+          </div>
+
+          <div className="flex items-start space-x-3 p-4 rounded-2xl border-2 border-primary/5 hover:border-primary/20 hover:bg-primary/5 cursor-pointer transition-all">
+            <RadioGroupItem value="flutter" id="ui-flutter" className="mt-1" />
+            <div className="flex-1">
+              <Label htmlFor="ui-flutter" className="cursor-pointer font-bold flex items-center gap-2">
+                Flutter
+                <span className="text-[10px] bg-sky-500/10 text-sky-600 px-2 py-0.5 rounded-full uppercase italic">Cross-platform</span>
+              </Label>
+              <p className="text-xs text-muted-foreground mt-1">Dart. Performance nativa com renderização própria e UI rica.</p>
+            </div>
+          </div>
+
+          <div className="flex items-start space-x-3 p-4 rounded-2xl border-2 border-primary/5 hover:border-primary/20 hover:bg-primary/5 cursor-pointer transition-all">
+            <RadioGroupItem value="maui" id="ui-maui" className="mt-1" />
+            <div className="flex-1">
+              <Label htmlFor="ui-maui" className="cursor-pointer font-bold flex items-center gap-2">
+                .NET MAUI
+                <span className="text-[10px] bg-purple-500/10 text-purple-600 px-2 py-0.5 rounded-full uppercase">Microsoft</span>
+              </Label>
+              <p className="text-xs text-muted-foreground mt-1">C#. Evolução do Xamarin. Único código para Android, iOS e Windows.</p>
             </div>
           </div>
         </RadioGroup>

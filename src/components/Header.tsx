@@ -30,7 +30,7 @@ export function Header({ onExport, onImport, onClear }: HeaderProps) {
   };
 
   return (
-    <header className="w-full h-16 glass border-b border-primary/10 sticky top-0 z-50 transform-gpu">
+    <header role="banner" className="w-full h-16 glass border-b border-primary/10 sticky top-0 z-50 transform-gpu">
       <div className="container mx-auto px-6 h-full flex items-center justify-between">
         <div className="flex items-center gap-4 group cursor-pointer">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
@@ -42,7 +42,7 @@ export function Header({ onExport, onImport, onClear }: HeaderProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <nav aria-label="Navegação e Ferramentas" className="flex items-center gap-3">
           <input
             type="file"
             ref={fileInputRef}
@@ -57,6 +57,7 @@ export function Header({ onExport, onImport, onClear }: HeaderProps) {
               size="sm"
               onClick={() => fileInputRef.current?.click()}
               className="h-8 px-3 rounded-lg hover:bg-background gap-2"
+              aria-label="Importar configurações"
             >
               <Upload className="w-3.5 h-3.5" />
               <span className="text-xs font-semibold">Importar</span>
@@ -67,6 +68,7 @@ export function Header({ onExport, onImport, onClear }: HeaderProps) {
               size="sm"
               onClick={onExport}
               className="h-8 px-3 rounded-lg hover:bg-background gap-2"
+              aria-label="Exportar configurações"
             >
               <FileJson className="w-3.5 h-3.5" />
               <span className="text-xs font-semibold">Exportar</span>
@@ -79,6 +81,7 @@ export function Header({ onExport, onImport, onClear }: HeaderProps) {
                 variant="ghost"
                 size="icon"
                 className="w-9 h-9 rounded-xl text-destructive hover:bg-destructive/10"
+                aria-label="Limpar dados"
               >
                 <Trash2 className="w-4 h-4" />
               </Button>
@@ -100,11 +103,12 @@ export function Header({ onExport, onImport, onClear }: HeaderProps) {
           </AlertDialog>
 
           <Button variant="outline" size="icon" asChild className="w-9 h-9 rounded-xl border-primary/10 hover:bg-primary/5">
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/vitorhubdev" target="_blank" rel="noopener noreferrer" aria-label="Ver perfil no GitHub">
               <Github className="w-4 h-4" />
+              <span className="sr-only">GitHub do desenvolvedor (abre em nova janela)</span>
             </a>
           </Button>
-        </div>
+        </nav>
       </div>
     </header>
   );

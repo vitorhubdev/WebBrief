@@ -487,6 +487,7 @@ function generateDockerModule(data: FormData): string {
 
 function generateAPIModule(data: FormData): string {
   return `**Tipo de API:** ${data.apiType.toUpperCase()}
+**Framework:** ${data.apiFramework || 'A ser sugerido pela IA (Fiber, Gin, Axum, FastAPI ou ASP.NET Core)'}
 **Domínio do negócio:** ${data.apiDomain}
 **Recursos principais:** ${data.apiResources}
 **Autenticação/Autorização:** ${data.apiAuth}
@@ -497,6 +498,9 @@ function generateAPIModule(data: FormData): string {
 **Versionamento:** ${data.apiVersioning === 'sim' ? 'Sim' : 'Não'}
 **Documentação:** ${data.apiDocs === 'sim' ? 'Sim (OpenAPI/Swagger)' : 'Não'}
 **Jobs assíncronos:** ${data.apiJobs === 'sim' ? 'Sim' : 'Não'}
+
+### Schema / Estrutura de Dados:
+${data.apiSchema ? `\`\`\`\n${data.apiSchema}\n\`\`\`` : 'Não fornecido (IA deve propor baseada nos recursos)'}
 
 ### Requisitos técnicos específicos:
 - Framework: Echo/Fiber (Go), Axum (Rust), FastAPI (Python), Express/NestJS (TS)

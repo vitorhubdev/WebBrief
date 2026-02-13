@@ -10,8 +10,7 @@ import { SpecificModule } from '@/components/steps/SpecificModule';
 import { Resultado } from '@/components/Resultado';
 import { usePromptGenerator } from '@/hooks/usePromptGenerator';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, ChevronRight, FileText, Zap, Shield, Code, Settings } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Zap, Code2, Layers, Cpu, HelpCircle, Sparkles } from 'lucide-react';
 import type { Preset } from '@/types';
 
 const steps = [
@@ -148,17 +147,29 @@ function App() {
     );
   }
 
+  const handleGenerate = () => {
+    generatePrompt();
+    setCurrentStep(7); // Move to the result step
+  };
+
   return (
-    <div className="min-h-screen bg-background selection:bg-primary/20 selection:text-primary">
-      <Header onExport={exportConfig} onImport={importConfig} onClear={clearSavedData} />
+    <div className="min-h-screen bg-background selection:bg-primary/20 flex flex-col items-center overflow-x-hidden">
+      {/* Skip Link para Acessibilidade */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-lg focus:shadow-xl focus:outline-none"
+      >
+        Pular para o conteúdo principal
+      </a>
 
-      <main className="container mx-auto px-4 py-12 md:py-20 lg:py-24">
-        <div className="max-w-5xl mx-auto space-y-16">
+      <Header onClear={clearSavedData} onExport={exportConfig} onImport={importConfig} />
 
+      <main id="main-content" role="main" className="flex-1 w-full flex flex-col items-center">
+        <div className="container px-4 py-8 sm:py-12 lg:py-20 space-y-16 sm:space-y-24 max-w-7xl mx-auto">
           {/* Hero Section */}
-          <section className="text-center space-y-8 animate-in fade-in slide-in-from-top-10 duration-1000">
+          <section id="hero" className="text-center space-y-8 animate-in fade-in slide-in-from-top-10 duration-1000">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border-primary/20 text-primary text-xs font-bold uppercase tracking-widest animate-float">
-              <Zap className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+              <Zap className="w-4 h-4 text-yellow-400 fill-yellow-400" aria-hidden="true" />
               <span>Prompt Engineering 2026</span>
             </div>
 
@@ -176,61 +187,104 @@ function App() {
             </div>
           </section>
 
-          {/* Feature Grid - Scannable & Modern */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4">
+          {/* Features Grid */}
+          <section id="features" aria-label="Recursos principais" className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200">
             {[
-              { icon: FileText, label: 'Estruturação', desc: 'Siga padrões de mercado' },
-              { icon: Code, label: 'Multi-Stack', desc: 'De Rust a TypeScript' },
-              { icon: Shield, label: 'Compliance', desc: 'Focado em LGPD/GDPR' },
-              { icon: Settings, label: 'Presets', desc: 'Início instantâneo' },
-            ].map((f) => (
+              {
+                icon: <Code2 className="w-6 h-6" />,
+                title: "Arquitetura Universal",
+                desc: "Estrutura otimizada para Web, Mobile, APIs e Desktop em um só lugar.",
+                bg: "from-blue-500/10 to-indigo-500/10"
+              },
+              {
+                icon: <Layers className="w-6 h-6" />,
+                title: "Refinamento em Etapas",
+                desc: "Do conceito base à segurança e deliverables. Nenhuma regra é esquecida.",
+                bg: "from-purple-500/10 to-pink-500/10"
+              },
+              {
+                icon: <Cpu className="w-6 h-6" />,
+                title: "Pronto para LLMs",
+                desc: "Prompts otimizados para GPT-5.3 Codex, Claude 4.6 Opus e Gemini 3 Deep Think.",
+                bg: "from-amber-500/10 to-orange-500/10"
+              }
+            ].map((feature, i) => (
               <div
-                key={f.label}
-                className="group p-6 rounded-2xl glass-card hover-lift border-transparent hover:border-primary/30"
+                key={i}
+                className="group p-8 rounded-[2.5rem] glass hover-lift border-primary/5 relative overflow-hidden transition-all duration-300"
               >
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-                  <f.icon className="w-6 h-6" />
+                <div className={`absolute inset-0 bg-gradient-to-br ${feature.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                <div className="relative z-10 space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-background flex items-center justify-center shadow-lg text-primary group-hover:scale-110 transition-transform">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl font-bold">{feature.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{feature.desc}</p>
                 </div>
-                <h3 className="font-bold text-lg mb-1">{f.label}</h3>
-                <p className="text-sm text-muted-foreground leading-snug">{f.desc}</p>
               </div>
             ))}
-          </div>
+          </section>
 
-          <div className="space-y-8 animate-in fade-in duration-700 delay-300">
-            {/* Step Indicator */}
-            <StepIndicator steps={steps} currentStep={currentStep} />
+          {/* Form Area */}
+          <section id="generator" aria-label="Gerador de Prompt" className="relative group mx-auto w-full max-w-5xl">
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-purple-500/20 to-indigo-500/20 rounded-[3rem] blur-2xl opacity-50 group-hover:opacity-100 transition duration-1000" />
 
-            {/* Form Card - Glassmorphism */}
-            <Card className="glass-card border-white/20 shadow-2xl overflow-hidden rounded-[2rem]">
-              <CardContent className="p-6 sm:p-10 lg:p-12">
-                {renderStep()}
+            <div className="relative glass-card rounded-[2.5rem] overflow-hidden border-primary/10">
+              <div className="p-1 sm:p-2 bg-muted/30 border-b border-primary/5">
+                <StepIndicator steps={steps} currentStep={currentStep} />
+              </div>
 
-                {/* Navigation */}
-                <div className="flex justify-between mt-12 pt-8 border-t border-primary/10">
+              <div className="p-6 sm:p-10 lg:p-12 min-h-[500px]">
+                {currentStep < 7 ? (
+                  <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                    <div className="mb-8 space-y-2">
+                      <h2 className="text-3xl font-bold tracking-tight">
+                        {currentStep === 1 && "Definição de Base"}
+                        {currentStep === 2 && "Identidade do Projeto"}
+                        {currentStep === 3 && "Requisitos Técnicos"}
+                        {currentStep === 4 && "Segurança e Legal"}
+                        {currentStep === 5 && "Deliverables e MVP"}
+                        {currentStep === 6 && "Configurações Específicas"}
+                      </h2>
+                      <p className="text-muted-foreground">Preencha os detalhes para estruturar o prompt ideal.</p>
+                    </div>
+                    {renderStep()}
+                  </div>
+                ) : (
+                  <Resultado prompt={generatedPrompt} onReset={resetForm} onExport={exportConfig} />
+                )}
+              </div>
+
+              {currentStep < 7 && (
+                <div className="p-6 sm:p-8 bg-muted/30 border-t border-primary/5 flex items-center justify-between">
                   <Button
                     variant="ghost"
                     onClick={handlePrev}
                     disabled={currentStep === 1}
-                    className="h-12 px-6 rounded-xl hover:bg-primary/5 gap-2 font-semibold"
+                    className="h-12 px-6 rounded-xl hover:bg-background gap-2 font-semibold"
                   >
                     <ChevronLeft className="w-5 h-5" />
                     Anterior
                   </Button>
 
-                  {currentStep === steps.length ? (
+                  {currentStep === 1 ? (
+                    <div className="hidden sm:flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                      Selecione um tipo para continuar
+                    </div>
+                  ) : null}
+
+                  {currentStep === 6 ? (
                     <Button
-                      onClick={generatePrompt}
-                      className="h-12 px-8 rounded-xl bg-primary hover:scale-105 transition-transform gap-2 font-bold shadow-lg shadow-primary/40"
-                      disabled={!formData.appType}
+                      onClick={handleGenerate}
+                      className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-indigo-600 hover:scale-105 transition-transform gap-2 font-bold shadow-xl shadow-primary/30 text-white border-none"
                     >
-                      <FileText className="w-5 h-5" />
                       Gerar Prompt
+                      <Sparkles className="w-5 h-5 fill-white/20" />
                     </Button>
                   ) : (
                     <Button
                       onClick={handleNext}
-                      className="h-12 px-8 rounded-xl bg-primary hover:scale-105 transition-transform gap-2 font-bold shadow-lg shadow-primary/40"
+                      className="h-12 px-8 rounded-xl bg-primary hover:scale-105 transition-transform gap-2 font-bold shadow-lg shadow-primary/40 text-white border-none"
                       disabled={!canProceed()}
                     >
                       Continuar
@@ -238,62 +292,83 @@ function App() {
                     </Button>
                   )}
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              )}
+            </div>
+          </section>
 
           {/* Quick Tips Section */}
-          <section className="grid sm:grid-cols-2 gap-6 px-4">
-            <div className="p-8 rounded-3xl bg-blue-500/5 border border-blue-500/20 backdrop-blur-sm group">
-              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Shield className="w-5 h-5 text-blue-500" />
+          <section id="tips" aria-label="Dicas rápidas" className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="p-10 rounded-[2.5rem] bg-indigo-600/5 border border-indigo-500/10 space-y-6">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                <HelpCircle className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-bold text-blue-900 dark:text-blue-300 mb-2">Engenharia de Prompt</h3>
-              <p className="text-sm text-blue-800/80 dark:text-blue-200/60 leading-relaxed">
-                Prompts estruturados reduzem alucinações da IA e garantem que o código siga as melhores práticas de arquitetura.
-              </p>
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold tracking-tight">Dica de Especialista</h3>
+                <p className="text-muted-foreground leading-relaxed text-sm">
+                  Quanto mais específico você for na seção de <strong className="text-foreground">Identidade do Projeto</strong>,
+                  mais o código gerado parecerá com um produto real em vez de um exemplo genérico.
+                </p>
+                <ul className="grid grid-cols-1 gap-3 pt-2">
+                  {[
+                    "Defina o público-alvo claramente",
+                    "Especifique o fluxo principal do usuário",
+                    "Mencione tecnologias legadas se necessário"
+                  ].map((tip, i) => (
+                    <li key={i} className="flex items-center gap-3 text-sm font-medium">
+                      <div className="w-1.5 h-1.5 rounded-full bg-indigo-600" aria-hidden="true" />
+                      {tip}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-            <div className="p-8 rounded-3xl bg-emerald-500/5 border border-emerald-500/20 backdrop-blur-sm group">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Code className="w-5 h-5 text-emerald-500" />
+
+            <div className="p-10 rounded-[2.5rem] bg-emerald-600/5 border border-emerald-500/10 space-y-6">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                <Zap className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-bold text-emerald-900 dark:text-emerald-300 mb-2">Zero Boilerplate</h3>
-              <p className="text-sm text-emerald-800/80 dark:text-emerald-200/60 leading-relaxed">
-                Gere arquivos de configuração, Dockerfiles e scripts de deploy prontos para uso em ambiente de produção real.
-              </p>
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold tracking-tight">O que vem a seguir?</h3>
+                <p className="text-muted-foreground leading-relaxed text-sm">
+                  O prompt gerado segue o padrão <strong className="text-foreground">SMILE (Simple, Modular, Integrated, Lean, Extensible)</strong>,
+                  garantindo que qualquer IA consiga implementar seu projeto.
+                </p>
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {['Clean Code', 'SOLID', 'DRY', 'YAGNI'].map((tag) => (
+                    <span key={tag} className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-700 text-[10px] font-black uppercase tracking-widest border border-emerald-500/10">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </section>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-primary/5 mt-20 bg-muted/20">
-        <div className="container mx-auto px-4 py-12 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
-          <div className="space-y-2">
-            <h2 className="font-bold text-xl tracking-tight">PromptGen</h2>
-            <p className="text-sm text-muted-foreground max-w-xs">
-              Construindo a ponte entre sua ideia e o código perfeito.
+      <footer role="contentinfo" className="w-full border-t border-primary/5 glass mt-20">
+        <div className="container mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="text-center md:text-left space-y-2">
+            <div className="flex items-center justify-center md:justify-start gap-2">
+              <div className="w-6 h-6 rounded-lg bg-primary/20 flex items-center justify-center">
+                <Sparkles className="w-3.5 h-3.5 text-primary" />
+              </div>
+              <span className="font-bold tracking-tight">PromptGen 2026</span>
+            </div>
+            <p className="text-xs text-muted-foreground font-medium">
+              Transformando sua visão em arquitetura técnica impecável.
             </p>
           </div>
-          <div className="flex gap-12 text-sm">
-            <div className="space-y-4">
-              <p className="font-bold uppercase tracking-widest text-[10px] text-muted-foreground">Produto</p>
-              <ul className="space-y-2">
-                <li><button onClick={() => window.scrollTo(0, 0)} className="hover:text-primary transition-colors">Gerador</button></li>
-                <li><button className="hover:text-primary transition-colors">Presets</button></li>
-              </ul>
-            </div>
-            <div className="space-y-4">
-              <p className="font-bold uppercase tracking-widest text-[10px] text-muted-foreground">Legal</p>
-              <ul className="space-y-2">
-                <li><button className="hover:text-primary transition-colors">Privacidade</button></li>
-                <li><button className="hover:text-primary transition-colors">Termos</button></li>
-              </ul>
-            </div>
+
+          <div className="flex items-center gap-6 text-xs font-bold text-muted-foreground uppercase tracking-widest">
+            <a href="#" className="hover:text-primary transition-colors">Termos</a>
+            <a href="#" className="hover:text-primary transition-colors">Privacidade</a>
+            <a href="https://github.com/vitorhubdev" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">GitHub</a>
           </div>
-        </div>
-        <div className="container mx-auto px-4 py-8 border-t border-primary/5 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} PromptGen AI Tool. Código Aberto sob licença MIT.
+
+          <p className="text-[10px] text-muted-foreground/60 font-bold">
+            &copy; {new Date().getFullYear()} vitorhubdev. Licença MIT.
+          </p>
         </div>
       </footer>
     </div>

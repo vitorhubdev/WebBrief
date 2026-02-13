@@ -36,9 +36,8 @@ export function IOSModule({ formData, updateField, toggleArrayField }: IOSModule
             <div
               key={version}
               onClick={() => updateField('iosMinVersion', version)}
-              className={`p-3 rounded-lg border cursor-pointer transition-colors text-center ${
-                formData.iosMinVersion === version ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
-              }`}
+              className={`p-3 rounded-lg border cursor-pointer transition-colors text-center ${formData.iosMinVersion === version ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
+                }`}
             >
               <span className="text-sm font-medium">iOS {version}+</span>
             </div>
@@ -46,25 +45,51 @@ export function IOSModule({ formData, updateField, toggleArrayField }: IOSModule
         </div>
       </div>
 
-      <div className="space-y-3">
-        <Label>Tecnologia de UI</Label>
+      <div className="space-y-4">
+        <Label className="text-base font-bold">Arquitetura de UI e Framework</Label>
         <RadioGroup
           value={formData.iosUI}
-          onValueChange={(v) => updateField('iosUI', v as 'uikit' | 'swiftui')}
-          className="grid grid-cols-2 gap-3"
+          onValueChange={(v) => updateField('iosUI', v as any)}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
-          <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer">
+          <div className="flex items-start space-x-3 p-4 rounded-2xl border-2 border-primary/5 hover:border-primary/20 hover:bg-primary/5 cursor-pointer transition-all">
             <RadioGroupItem value="swiftui" id="ios-ui-swiftui" className="mt-1" />
-            <div>
-              <Label htmlFor="ios-ui-swiftui" className="cursor-pointer font-medium">SwiftUI</Label>
-              <p className="text-xs text-muted-foreground">Moderno, declarativo</p>
+            <div className="flex-1">
+              <Label htmlFor="ios-ui-swiftui" className="cursor-pointer font-bold flex items-center gap-2">
+                SwiftUI
+                <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full uppercase">Apple</span>
+              </Label>
+              <p className="text-xs text-muted-foreground mt-1">Moderno, declarativo. Recomendado para novos projetos.</p>
             </div>
           </div>
-          <div className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer">
+
+          <div className="flex items-start space-x-3 p-4 rounded-2xl border-2 border-primary/5 hover:border-primary/20 hover:bg-primary/5 cursor-pointer transition-all">
             <RadioGroupItem value="uikit" id="ios-ui-uikit" className="mt-1" />
-            <div>
-              <Label htmlFor="ios-ui-uikit" className="cursor-pointer font-medium">UIKit</Label>
-              <p className="text-xs text-muted-foreground">Imperativo, maduro</p>
+            <div className="flex-1">
+              <Label htmlFor="ios-ui-uikit" className="cursor-pointer font-bold">UIKit</Label>
+              <p className="text-xs text-muted-foreground mt-1">Imperativo, maduro. Ideal para controle total e sistemas complexos.</p>
+            </div>
+          </div>
+
+          <div className="flex items-start space-x-3 p-4 rounded-2xl border-2 border-primary/5 hover:border-primary/20 hover:bg-primary/5 cursor-pointer transition-all">
+            <RadioGroupItem value="flutter" id="ios-ui-flutter" className="mt-1" />
+            <div className="flex-1">
+              <Label htmlFor="ios-ui-flutter" className="cursor-pointer font-bold flex items-center gap-2">
+                Flutter
+                <span className="text-[10px] bg-sky-500/10 text-sky-600 px-2 py-0.5 rounded-full uppercase italic">Cross-platform</span>
+              </Label>
+              <p className="text-xs text-muted-foreground mt-1">Dart. Alta performance com renderização própria Custom UI.</p>
+            </div>
+          </div>
+
+          <div className="flex items-start space-x-3 p-4 rounded-2xl border-2 border-primary/5 hover:border-primary/20 hover:bg-primary/5 cursor-pointer transition-all">
+            <RadioGroupItem value="maui" id="ios-ui-maui" className="mt-1" />
+            <div className="flex-1">
+              <Label htmlFor="ios-ui-maui" className="cursor-pointer font-bold flex items-center gap-2">
+                .NET MAUI
+                <span className="text-[10px] bg-purple-500/10 text-purple-600 px-2 py-0.5 rounded-full uppercase">Microsoft</span>
+              </Label>
+              <p className="text-xs text-muted-foreground mt-1">C#. Único código compartilhado com Android e Windows Desktop.</p>
             </div>
           </div>
         </RadioGroup>

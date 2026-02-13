@@ -24,10 +24,10 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
               <div className="flex flex-col items-center group">
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-500 transform-gpu ${isActive
-                      ? 'bg-primary text-primary-foreground scale-110 shadow-lg shadow-primary/30 ring-4 ring-primary/10'
-                      : isCompleted
-                        ? 'bg-primary/20 text-primary'
-                        : 'bg-muted/50 text-muted-foreground border border-primary/5'
+                    ? 'bg-primary text-primary-foreground scale-110 shadow-lg shadow-primary/30 ring-4 ring-primary/10'
+                    : isCompleted
+                      ? 'bg-primary/20 text-primary'
+                      : 'bg-muted/50 text-muted-foreground border border-primary/5'
                     }`}
                 >
                   {isCompleted ? <Check className="w-4 h-4" /> : step.id}

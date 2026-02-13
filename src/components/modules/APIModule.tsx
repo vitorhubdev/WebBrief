@@ -1,7 +1,8 @@
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Server } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Server, Database } from 'lucide-react';
 import type { FormData } from '@/types';
 
 interface APIModuleProps {
@@ -36,6 +37,19 @@ export function APIModule({ formData, updateField }: APIModuleProps) {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="api-framework">Framework específico (Opcional)</Label>
+        <Input
+          id="api-framework"
+          placeholder="Ex: Fiber v3, FastAPI, Axum, ASP.NET Core 10..."
+          value={formData.apiFramework}
+          onChange={(e) => updateField('apiFramework', e.target.value)}
+        />
+        <p className="text-[10px] text-muted-foreground italic">
+          O prompt será adaptado para as melhores práticas deste framework.
+        </p>
       </div>
 
       <div className="space-y-2">
@@ -215,6 +229,23 @@ export function APIModule({ formData, updateField }: APIModuleProps) {
             <Label htmlFor="jobs-nao" className="cursor-pointer text-sm">Não</Label>
           </div>
         </RadioGroup>
+      </div>
+
+      <div className="space-y-3">
+        <Label htmlFor="api-schema" className="flex items-center gap-2">
+          <Database className="w-4 h-4 text-primary" />
+          Schema do Banco de Dados / Entidades (Opcional)
+        </Label>
+        <Textarea
+          id="api-schema"
+          placeholder="Cole aqui seu schema SQL, definições Prisma, modelos Mongoose ou apenas as entidades e seus campos..."
+          className="min-h-[200px] font-mono text-xs bg-muted/30"
+          value={formData.apiSchema}
+          onChange={(e) => updateField('apiSchema', e.target.value)}
+        />
+        <p className="text-[10px] text-muted-foreground italic">
+          Fornecer o schema ajuda a IA a gerar repositórios e serviços mais precisos.
+        </p>
       </div>
     </div>
   );
