@@ -45,13 +45,35 @@ export function TechnicalRequirements({ formData, updateField }: TechnicalRequir
           </div>
 
           {/* Performance target */}
-          <div className="space-y-2">
-            <Label htmlFor="performance">Meta de performance (opcional)</Label>
+          <div className="space-y-3">
+            <Label htmlFor="performance">Meta de performance / SLA</Label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {[
+                'Carregamento < 1s',
+                'API < 200ms',
+                '10k+ usuários simultâneos',
+                '99.9% Disponibilidade',
+                'Resposta Instantânea (Optimistic UI)'
+              ].map((target) => (
+                <button
+                  key={target}
+                  type="button"
+                  onClick={() => updateField('performanceTarget', target)}
+                  className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all border ${formData.performanceTarget === target
+                      ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
+                      : 'bg-muted/50 border-primary/10 hover:border-primary/30 text-muted-foreground hover:text-foreground'
+                    }`}
+                >
+                  {target}
+                </button>
+              ))}
+            </div>
             <Input
               id="performance"
-              placeholder="Ex: Carregar em <2s, API <200ms, etc."
+              placeholder="Ou digite sua meta customizada..."
               value={formData.performanceTarget}
               onChange={(e) => updateField('performanceTarget', e.target.value)}
+              className="h-9 text-sm"
             />
           </div>
         </Card>

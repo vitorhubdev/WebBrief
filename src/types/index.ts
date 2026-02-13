@@ -120,8 +120,8 @@ export interface FormData {
   apiDomain: string;
   apiResources: string;
   apiAuth: 'nenhuma' | 'jwt' | 'oauth' | 'apikey' | 'rbac';
-  apiDatabase: 'nenhum' | 'sqlite' | 'postgres' | 'mysql' | 'mongodb' | 'redis';
-  apiCache: 'nenhum' | 'redis' | 'outro';
+  apiDatabase: string;
+  apiCache: string;
   apiPagination: 'sim' | 'nao';
   apiRateLimit: 'sim' | 'nao';
   apiVersioning: 'sim' | 'nao';

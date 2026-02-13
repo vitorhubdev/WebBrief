@@ -114,12 +114,29 @@ export function BasicInfo({ formData, updateField, toggleArrayField }: BasicInfo
           </RadioGroup>
 
           {formData.hasAuth === 'sim' && (
-            <Input
-              placeholder="Tipo: Email/senha, OAuth (Google/GitHub), SSO..."
-              value={formData.authType}
-              onChange={(e) => updateField('authType', e.target.value)}
-              className="animate-in fade-in slide-in-from-top-2"
-            />
+            <div className="space-y-3 animate-in fade-in slide-in-from-top-2">
+              <div className="flex flex-wrap gap-2">
+                {['Email/Senha', 'OAuth (Google/GitHub)', 'Magic Link', 'SSO', 'Biometria'].map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => updateField('authType', type)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${formData.authType === type
+                      ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
+                      : 'bg-muted/50 border-primary/10 hover:border-primary/30 text-muted-foreground hover:text-foreground'
+                      }`}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+              <Input
+                placeholder="Ou digite outro tipo customizado..."
+                value={formData.authType}
+                onChange={(e) => updateField('authType', e.target.value)}
+                className="mt-2 h-9 text-sm"
+              />
+            </div>
           )}
         </div>
 
@@ -142,23 +159,63 @@ export function BasicInfo({ formData, updateField, toggleArrayField }: BasicInfo
           </RadioGroup>
 
           {formData.storesData === 'sim' && (
-            <Input
-              placeholder="Onde: SQLite, PostgreSQL, MongoDB, Firebase..."
-              value={formData.storageType}
-              onChange={(e) => updateField('storageType', e.target.value)}
-              className="animate-in fade-in slide-in-from-top-2"
-            />
+            <div className="space-y-3 animate-in fade-in slide-in-from-top-2">
+              <div className="flex flex-wrap gap-2">
+                {['PostgreSQL', 'MongoDB', 'PocketBase', 'SQLite', 'Supabase', 'Redis'].map((db) => (
+                  <button
+                    key={db}
+                    type="button"
+                    onClick={() => updateField('storageType', db)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${formData.storageType === db
+                      ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
+                      : 'bg-muted/50 border-primary/10 hover:border-primary/30 text-muted-foreground hover:text-foreground'
+                      }`}
+                  >
+                    {db}
+                  </button>
+                ))}
+              </div>
+              <Input
+                placeholder="Ou digite outro banco de dados..."
+                value={formData.storageType}
+                onChange={(e) => updateField('storageType', e.target.value)}
+                className="mt-2 h-9 text-sm"
+              />
+            </div>
           )}
         </div>
 
         {/* Integrações */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           <Label htmlFor="integrations">Integrações externas (APIs, serviços)</Label>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {['Stripe', 'SendGrid', 'Google Maps', 'AWS S3', 'OpenAI', 'WhatsApp'].map((service) => (
+              <button
+                key={service}
+                type="button"
+                onClick={() => {
+                  const current = formData.integrations.split(',').map(s => s.trim()).filter(Boolean);
+                  if (current.includes(service)) {
+                    updateField('integrations', current.filter(s => s !== service).join(', '));
+                  } else {
+                    updateField('integrations', [...current, service].join(', '));
+                  }
+                }}
+                className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all border ${formData.integrations.includes(service)
+                    ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
+                    : 'bg-muted/50 border-primary/10 hover:border-primary/30 text-muted-foreground hover:text-foreground'
+                  }`}
+              >
+                {service}
+              </button>
+            ))}
+          </div>
           <Input
             id="integrations"
             placeholder="Ex: Stripe, SendGrid, Google Maps, AWS S3... (ou 'nenhuma')"
             value={formData.integrations}
             onChange={(e) => updateField('integrations', e.target.value)}
+            className="h-9 text-sm"
           />
         </div>
       </div>

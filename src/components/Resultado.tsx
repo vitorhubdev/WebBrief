@@ -57,9 +57,27 @@ export function Resultado({ prompt, onReset, onExport }: ResultadoProps) {
             <Textarea
               value={prompt}
               readOnly
-              className="relative min-h-[450px] font-mono text-sm bg-muted/30 border-primary/5 rounded-2xl p-6 resize-none focus-visible:ring-primary/20 leading-relaxed overflow-hidden break-words whitespace-pre-wrap"
+              className="relative min-h-[450px] font-mono text-sm bg-muted/30 border-primary/5 rounded-2xl p-6 resize-none focus-visible:ring-primary/20 leading-relaxed overflow-y-auto break-words whitespace-pre-wrap scrollbar-thin scrollbar-thumb-primary/10 scrollbar-track-transparent"
               aria-label="Conteúdo do prompt gerado"
             />
+
+            {/* Stats Bar */}
+            <div className="absolute bottom-4 right-6 flex items-center gap-4 px-4 py-2 rounded-xl bg-background/80 backdrop-blur-md border border-primary/5 shadow-sm animate-in fade-in zoom-in duration-500">
+              <div className="flex flex-col items-center">
+                <span className="text-[10px] uppercase tracking-tighter font-black text-muted-foreground/60">Tokens ~</span>
+                <span className="text-xs font-bold text-primary">{Math.ceil(prompt.length / 4)}</span>
+              </div>
+              <div className="w-px h-6 bg-primary/10" />
+              <div className="flex flex-col items-center">
+                <span className="text-[10px] uppercase tracking-tighter font-black text-muted-foreground/60">Caracteres</span>
+                <span className="text-xs font-bold text-primary">{prompt.length}</span>
+              </div>
+              <div className="w-px h-6 bg-primary/10" />
+              <div className="flex flex-col items-center">
+                <span className="text-[10px] uppercase tracking-tighter font-black text-muted-foreground/60">Linhas</span>
+                <span className="text-xs font-bold text-primary">{prompt.split('\n').length}</span>
+              </div>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4">

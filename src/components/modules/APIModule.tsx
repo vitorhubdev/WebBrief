@@ -95,47 +95,57 @@ export function APIModule({ formData, updateField }: APIModuleProps) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-3">
-          <Label>Banco de dados</Label>
-          <RadioGroup
-            value={formData.apiDatabase}
-            onValueChange={(v) => updateField('apiDatabase', v as 'nenhum' | 'sqlite' | 'postgres' | 'mysql' | 'mongodb' | 'redis')}
-            className="space-y-2"
-          >
-            {[
-              { value: 'nenhum', label: 'Nenhum (stateless)' },
-              { value: 'sqlite', label: 'SQLite' },
-              { value: 'postgres', label: 'PostgreSQL' },
-              { value: 'mysql', label: 'MySQL' },
-              { value: 'mongodb', label: 'MongoDB' },
-              { value: 'redis', label: 'Redis' },
-            ].map((db) => (
-              <div key={db.value} className="flex items-center space-x-2">
-                <RadioGroupItem value={db.value} id={`db-${db.value}`} />
-                <Label htmlFor={`db-${db.value}`} className="cursor-pointer text-sm">{db.label}</Label>
-              </div>
+        <div className="space-y-4">
+          <Label className="flex items-center gap-2">
+            <Database className="w-4 h-4 text-primary" />
+            Banco de Dados Principal
+          </Label>
+          <div className="flex flex-wrap gap-2">
+            {['PostgreSQL', 'MongoDB', 'SQLite', 'PocketBase', 'Supabase', 'MySQL', 'Redis'].map((db) => (
+              <button
+                key={db}
+                type="button"
+                onClick={() => updateField('apiDatabase', db as any)}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${formData.apiDatabase === db
+                    ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
+                    : 'bg-muted/50 border-primary/10 hover:border-primary/30 text-muted-foreground hover:text-foreground'
+                  }`}
+              >
+                {db}
+              </button>
             ))}
-          </RadioGroup>
+          </div>
+          <Input
+            placeholder="Ou digite outro banco de dados customizado..."
+            value={formData.apiDatabase}
+            onChange={(e) => updateField('apiDatabase', e.target.value as any)}
+            className="h-9 text-sm"
+          />
         </div>
 
-        <div className="space-y-3">
-          <Label>Cache</Label>
-          <RadioGroup
-            value={formData.apiCache}
-            onValueChange={(v) => updateField('apiCache', v as 'nenhum' | 'redis' | 'outro')}
-            className="space-y-2"
-          >
-            {[
-              { value: 'nenhum', label: 'Nenhum' },
-              { value: 'redis', label: 'Redis' },
-              { value: 'outro', label: 'Outro' },
-            ].map((cache) => (
-              <div key={cache.value} className="flex items-center space-x-2">
-                <RadioGroupItem value={cache.value} id={`cache-${cache.value}`} />
-                <Label htmlFor={`cache-${cache.value}`} className="cursor-pointer text-sm">{cache.label}</Label>
-              </div>
+        <div className="space-y-4">
+          <Label>Sistema de Cache</Label>
+          <div className="flex flex-wrap gap-2">
+            {['Redis', 'Memcached', 'In-Memory', 'Dragonfly'].map((cache) => (
+              <button
+                key={cache}
+                type="button"
+                onClick={() => updateField('apiCache', cache as any)}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${formData.apiCache === cache
+                    ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
+                    : 'bg-muted/50 border-primary/10 hover:border-primary/30 text-muted-foreground hover:text-foreground'
+                  }`}
+              >
+                {cache}
+              </button>
             ))}
-          </RadioGroup>
+          </div>
+          <Input
+            placeholder="Ou digite outro sistema de cache..."
+            value={formData.apiCache}
+            onChange={(e) => updateField('apiCache', e.target.value as any)}
+            className="h-9 text-sm"
+          />
         </div>
       </div>
 
