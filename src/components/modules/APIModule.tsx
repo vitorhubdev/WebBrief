@@ -105,7 +105,7 @@ export function APIModule({ formData, updateField }: APIModuleProps) {
               <button
                 key={db}
                 type="button"
-                onClick={() => updateField('apiDatabase', db as any)}
+                onClick={() => updateField('apiDatabase', db)}
                 className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${formData.apiDatabase === db
                     ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
                     : 'bg-muted/50 border-primary/10 hover:border-primary/30 text-muted-foreground hover:text-foreground'
@@ -118,7 +118,7 @@ export function APIModule({ formData, updateField }: APIModuleProps) {
           <Input
             placeholder="Ou digite outro banco de dados customizado..."
             value={formData.apiDatabase}
-            onChange={(e) => updateField('apiDatabase', e.target.value as any)}
+            onChange={(e) => updateField('apiDatabase', e.target.value)}
             className="h-9 text-sm"
           />
         </div>
@@ -130,7 +130,7 @@ export function APIModule({ formData, updateField }: APIModuleProps) {
               <button
                 key={cache}
                 type="button"
-                onClick={() => updateField('apiCache', cache as any)}
+                onClick={() => updateField('apiCache', cache)}
                 className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${formData.apiCache === cache
                     ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
                     : 'bg-muted/50 border-primary/10 hover:border-primary/30 text-muted-foreground hover:text-foreground'
@@ -143,7 +143,7 @@ export function APIModule({ formData, updateField }: APIModuleProps) {
           <Input
             placeholder="Ou digite outro sistema de cache..."
             value={formData.apiCache}
-            onChange={(e) => updateField('apiCache', e.target.value as any)}
+            onChange={(e) => updateField('apiCache', e.target.value)}
             className="h-9 text-sm"
           />
         </div>

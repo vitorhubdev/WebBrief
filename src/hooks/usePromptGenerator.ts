@@ -1,38 +1,38 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import type { FormData, Preset } from '@/types';
 import { initialFormData, presets } from '@/types';
 
 const STORAGE_KEY = 'promptgen-config-v2';
 
 export function usePromptGenerator() {
-  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [formData, setFormData] = useState<FormData>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) {
+      return initialFormData;
+    }
+
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed && typeof parsed === 'object') {
+        return { ...initialFormData, ...parsed };
+      }
+    } catch (e) {
+      console.error('Erro ao carregar configuração:', e);
+    }
+
+    return initialFormData;
+  });
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [showResult, setShowResult] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [promptStats, setPromptStats] = useState({ tokens: 0, characters: 0, lines: 0 });
-
-  // Carregar configuração salva ao iniciar
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setFormData(prev => ({ ...prev, ...parsed }));
-      } catch (e) {
-        console.error('Erro ao carregar configuração:', e);
-      }
-    }
-  }, []);
-
-  // Calcular estatísticas em tempo real
-  useEffect(() => {
+  const promptStats = useMemo(() => {
     const preview = generatePromptText(formData);
-    setPromptStats({
+    return {
       tokens: Math.ceil(preview.length / 4),
       characters: preview.length,
       lines: preview.split('\n').length
-    });
+    };
   }, [formData]);
 
   // Salvar configuração automaticamente
@@ -459,7 +459,7 @@ export function generateTOON(data: FormData): string {
 
 // Formato XML para estruturação hierárquica clara e rica
 export function generateXML(data: FormData): string {
-  const escape = (str: any) => String(str).replace(/[<>&"']/g, (c) => {
+  const escape = (str: unknown) => String(str).replace(/[<>&"']/g, (c) => {
     switch (c) {
       case '<': return '&lt;';
       case '>': return '&gt;';
@@ -567,6 +567,7 @@ function getStackLabel(stack: string): string {
     'kotlin': 'Kotlin',
     'swift': 'Swift',
     'java': 'Java',
+    'dart': 'Dart',
   };
   return labels[stack] || stack;
 }
@@ -592,6 +593,16 @@ function getOfflineLabel(offline: string): string {
     'nao': 'Não necessário',
     'parcial': 'Parcial (cache de dados)',
     'total': 'Total (funciona 100% offline)',
+  };
+  return labels[offline] || offline;
+}
+
+
+function getMobileOfflineLabel(offline: string): string {
+  const labels: Record<string, string> = {
+    'nao': 'Não necessário',
+    'cache': 'Parcial (cache local)',
+    'sync': 'Sincronização offline/online',
   };
   return labels[offline] || offline;
 }
@@ -687,12 +698,12 @@ function generateWebsiteModule(data: FormData): string {
 
 function generateAndroidModule(data: FormData): string {
   return `**Versão mínima:** Android ${data.androidMinVersion}+
-**UI:** ${data.androidUI === 'compose' ? 'Jetpack Compose' : 'XML tradicional'}
+**UI:** ${getAndroidUILabel(data.androidUI)}
 **Suporte tablet:** ${data.androidTablet === 'sim' ? 'Sim' : 'Não'}
 **Orientação:** ${data.androidOrientation}
 **Permissões:** ${data.androidPermissions.join(', ') || 'Nenhuma especial'}
 **Push notifications:** ${data.androidPush === 'sim' ? `Sim (${data.androidPushType})` : 'Não'}
-**Offline:** ${getOfflineLabel(data.androidOffline)}
+**Offline:** ${getMobileOfflineLabel(data.androidOffline)}
 **Autenticação:** ${data.androidAuth}
 **Distribuição:** ${data.androidDistribution}
 **Telemetria:** ${data.androidTelemetry}
@@ -707,11 +718,11 @@ function generateAndroidModule(data: FormData): string {
 
 function generateiOSModule(data: FormData): string {
   return `**Versão mínima:** iOS ${data.iosMinVersion}+
-**UI:** ${data.iosUI === 'swiftui' ? 'SwiftUI' : 'UIKit'}
+**UI:** ${getIOSUILabel(data.iosUI)}
 **Suporte iPad:** ${data.iosIpad === 'sim' ? 'Sim' : 'Não'}
 **Permissões:** ${data.iosPermissions.join(', ') || 'Nenhuma especial'}
 **Push notifications:** ${data.iosPush === 'sim' ? `Sim (${data.iosPushType})` : 'Não'}
-**Offline:** ${getOfflineLabel(data.iosOffline)}
+**Offline:** ${getMobileOfflineLabel(data.iosOffline)}
 **Autenticação:** ${data.iosAuth}
 **Distribuição:** ${data.iosDistribution}
 **Tela de privacidade:** ${data.iosPrivacyScreen === 'sim' ? 'Sim' : 'Não'}
@@ -722,6 +733,27 @@ function generateiOSModule(data: FormData): string {
 - Async: async/await (Swift 5.5+)
 - Persistência: Core Data or SwiftData
 - Testes: XCTest`;
+}
+
+
+function getAndroidUILabel(ui: FormData['androidUI']): string {
+  const labels: Record<FormData['androidUI'], string> = {
+    compose: 'Jetpack Compose',
+    xml: 'XML tradicional',
+    flutter: 'Flutter',
+    maui: '.NET MAUI',
+  };
+  return labels[ui];
+}
+
+function getIOSUILabel(ui: FormData['iosUI']): string {
+  const labels: Record<FormData['iosUI'], string> = {
+    swiftui: 'SwiftUI',
+    uikit: 'UIKit',
+    flutter: 'Flutter',
+    maui: '.NET MAUI',
+  };
+  return labels[ui];
 }
 
 function generateCLIModule(data: FormData): string {

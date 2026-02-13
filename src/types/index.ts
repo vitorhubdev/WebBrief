@@ -59,7 +59,7 @@ export interface FormData {
 
   // === MÓDULO: ANDROID ===
   androidMinVersion: string;
-  androidUI: 'xml' | 'compose';
+  androidUI: 'xml' | 'compose' | 'flutter' | 'maui';
   androidTablet: 'sim' | 'nao';
   androidOrientation: 'portrait' | 'landscape' | 'ambos';
   androidPermissions: string[];
@@ -72,7 +72,7 @@ export interface FormData {
 
   // === MÓDULO: iOS ===
   iosMinVersion: string;
-  iosUI: 'uikit' | 'swiftui';
+  iosUI: 'uikit' | 'swiftui' | 'flutter' | 'maui';
   iosIpad: 'sim' | 'nao';
   iosPermissions: string[];
   iosPush: 'sim' | 'nao';
