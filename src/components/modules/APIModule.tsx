@@ -29,11 +29,10 @@ export function APIModule({ formData, updateField }: APIModuleProps) {
             <div
               key={type.value}
               onClick={() => updateField('apiType', type.value as 'rest' | 'graphql' | 'grpc' | 'websocket')}
-              className={`p-3 rounded-lg border cursor-pointer transition-colors text-center ${
-                formData.apiType === type.value ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
-              }`}
+              className={`p-2 rounded-lg border cursor-pointer transition-colors text-center overflow-hidden flex items-center justify-center min-h-[44px] ${formData.apiType === type.value ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
+                }`}
             >
-              <span className="text-sm font-medium">{type.label}</span>
+              <span className="text-sm font-medium leading-tight whitespace-normal break-words">{type.label}</span>
             </div>
           ))}
         </div>

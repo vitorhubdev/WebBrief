@@ -9,13 +9,13 @@ export interface FormData {
   // === ETAPA 1: TIPO E STACK ===
   appType: AppType | '';
   stack: Stack | '';
-  
+
   // === ETAPA 2: IDENTIDADE E OBJETIVO ===
   projectName: string;
   pitch: string;
   targetAudience: string;
   mainAction: string;
-  
+
   // === ETAPA 3: FUNCIONALIDADES ===
   features: string[];
   hasAuth: 'sim' | 'nao';
@@ -23,27 +23,27 @@ export interface FormData {
   storesData: 'sim' | 'nao';
   storageType: string;
   integrations: string;
-  
+
   // === ETAPA 4: REQUISITOS TÉCNICOS ===
   offlineSupport: 'nao' | 'parcial' | 'total';
   performanceTarget: string;
   accessibility: 'basica' | 'avancada';
   languages: 'ptbr' | 'multi';
   theme: 'claro' | 'escuro' | 'ambos';
-  
+
   // === ETAPA 5: SEGURANÇA E LEGAL ===
   collectsData: 'sim' | 'nao';
   collectedDataTypes: string[];
   regulatedSector: 'nao' | 'saude' | 'financas' | 'educacao' | 'outro';
   licensesSource: string;
-  
+
   // === ETAPA 6: ENTREGÁVEIS ===
   deliverables: string[];
   scope: 'mvp' | 'completo';
   codeQuality: 'simples' | 'clean' | 'patterns' | 'arquitetura';
   tests: 'nenhum' | 'unitarios' | 'integracao' | 'e2e';
   securityLevel: 'basica' | 'avancada' | 'compliance';
-  
+
   // === MÓDULO: WEBSITE ===
   websiteType: string;
   websitePages: string[];
@@ -56,7 +56,7 @@ export interface FormData {
   designStyle: string;
   designReference: string;
   allowAICrawlers: 'sim' | 'nao';
-  
+
   // === MÓDULO: ANDROID ===
   androidMinVersion: string;
   androidUI: 'xml' | 'compose';
@@ -69,7 +69,7 @@ export interface FormData {
   androidAuth: 'nenhuma' | 'email' | 'social' | 'sso';
   androidDistribution: 'apk' | 'playstore' | 'ambas';
   androidTelemetry: 'nenhum' | 'crash' | 'analytics';
-  
+
   // === MÓDULO: iOS ===
   iosMinVersion: string;
   iosUI: 'uikit' | 'swiftui';
@@ -81,7 +81,7 @@ export interface FormData {
   iosAuth: 'nenhuma' | 'email' | 'apple' | 'outros';
   iosDistribution: 'testflight' | 'appstore' | 'ambas';
   iosPrivacyScreen: 'sim' | 'nao';
-  
+
   // === MÓDULO: CLI ===
   cliPurpose: string;
   cliCommands: string;
@@ -91,7 +91,7 @@ export interface FormData {
   cliInteractive: 'sim' | 'nao';
   cliPlatforms: string[];
   cliInstall: 'binario' | 'package' | 'script';
-  
+
   // === MÓDULO: GUI ===
   guiFramework: string;
   guiFlow: string;
@@ -101,7 +101,7 @@ export interface FormData {
   guiAutoUpdate: 'sim' | 'nao';
   guiPersistence: 'nenhum' | 'config' | 'banco';
   guiPackaging: 'installer' | 'portable' | 'ambos';
-  
+
   // === MÓDULO: DOCKER ===
   dockerType: string;
   dockerPorts: string;
@@ -113,7 +113,7 @@ export interface FormData {
   dockerMultistage: 'sim' | 'nao';
   dockerCompose: 'sim' | 'nao';
   dockerServices: string;
-  
+
   // === MÓDULO: API ===
   apiType: 'rest' | 'graphql' | 'grpc' | 'websocket';
   apiDomain: string;
@@ -126,11 +126,11 @@ export interface FormData {
   apiVersioning: 'sim' | 'nao';
   apiDocs: 'sim' | 'nao';
   apiJobs: 'sim' | 'nao';
-  
+
   // === CRÉDITOS ===
   creditsText: string;
   creditsLocation: string;
-  
+
   // === EXTRAS ===
   notes: string;
 }
@@ -442,6 +442,60 @@ export const presets: Preset[] = [
       scope: 'mvp',
     }
   },
+  {
+    id: 'microservice',
+    name: 'Microserviço de Autenticação',
+    description: 'Serviço performático com Go e JWT',
+    icon: 'Shield',
+    appType: 'api',
+    stack: 'go',
+    data: {
+      apiType: 'rest',
+      apiAuth: 'jwt',
+      apiDatabase: 'postgres',
+      apiResources: 'Auth, Users, Permissions',
+      hasAuth: 'sim',
+      storesData: 'sim',
+      storageType: 'postgres',
+      scope: 'completo',
+      codeQuality: 'arquitetura',
+    }
+  },
+  {
+    id: 'discord-bot',
+    name: 'Bot de Discord',
+    description: 'CLI interativo para automação',
+    icon: 'Terminal',
+    appType: 'cli',
+    stack: 'typescript',
+    data: {
+      cliPurpose: 'Automação de servidores e comandos interativos',
+      cliCommands: '!ping, !ban, !help',
+      cliInteractive: 'sim',
+      cliPlatforms: ['linux'],
+      hasAuth: 'nao',
+      storesData: 'sim',
+      storageType: 'mongodb',
+    }
+  },
+  {
+    id: 'financas-pessoais',
+    name: 'App de Finanças',
+    description: 'Gestão de gastos mobile (iOS)',
+    icon: 'Apple',
+    appType: 'ios',
+    stack: 'swift',
+    data: {
+      iosUI: 'swiftui',
+      iosMinVersion: '17',
+      iosOffline: 'sync',
+      iosAuth: 'apple',
+      hasAuth: 'sim',
+      storesData: 'sim',
+      storageType: 'swiftdata',
+      features: ['auth', 'pagamentos', 'geolocalizacao'],
+    }
+  },
 ];
 
 // Opções para selects
@@ -455,61 +509,72 @@ export const appTypeOptions = [
   { value: 'api', label: 'API/Backend', icon: 'Server', desc: 'REST, GraphQL, gRPC' },
 ];
 
+// Mapeamento de compatibilidade: quais stacks funcionam com cada tipo de app
+export const stackCompatibility: Record<AppType, Stack[]> = {
+  website: ['typescript', 'python', 'go'],
+  android: ['kotlin', 'java'],
+  ios: ['swift'],
+  cli: ['go', 'rust', 'python', 'typescript', 'cpp', 'csharp'],
+  gui: ['csharp', 'cpp', 'typescript', 'rust', 'python', 'kotlin', 'swift', 'java'],
+  docker: ['go', 'rust', 'python', 'typescript', 'java', 'csharp'],
+  api: ['go', 'rust', 'python', 'typescript', 'java', 'csharp'],
+};
+
 export const stackOptions = [
-  { value: 'go', label: 'Go', desc: 'Alta performance, concorrência' },
-  { value: 'rust', label: 'Rust', desc: 'Segurança, performance' },
-  { value: 'python', label: 'Python', desc: 'Produtividade, IA/ML' },
-  { value: 'typescript', label: 'TypeScript', desc: 'Bun/Node - Web moderna' },
-  { value: 'cpp', label: 'C++', desc: 'Sistemas, games, embarcado' },
-  { value: 'csharp', label: 'C#', desc: '.NET, Windows, Unity' },
-  { value: 'kotlin', label: 'Kotlin', desc: 'Android nativo' },
-  { value: 'swift', label: 'Swift', desc: 'iOS/macOS nativo' },
-  { value: 'java', label: 'Java', desc: 'Android, enterprise' },
+  { value: 'go', label: 'Go', desc: 'Sistemas rápidos, APIs e Microserviços' },
+  { value: 'rust', label: 'Rust', desc: 'Segurança de memória e performance extrema' },
+  { value: 'python', label: 'Python', desc: 'IA, Automação e Prototipagem rápida' },
+  { value: 'typescript', label: 'TypeScript', desc: 'Ecossistema JS/Node - Web e Desktop' },
+  { value: 'cpp', label: 'C++', desc: 'Software de baixo nível e alto desempenho' },
+  { value: 'csharp', label: 'C#', desc: 'Ecossistema .NET (Windows e Games)' },
+  { value: 'kotlin', label: 'Kotlin', desc: 'Android Moderno e PC (Compose)' },
+  { value: 'swift', label: 'Swift', desc: 'Apple (iOS, macOS, iPadOS)' },
+  { value: 'java', label: 'Java', desc: 'Sistemas corporativos e legados' },
 ];
 
 export const featureOptions = [
-  { value: 'auth', label: 'Autenticação de usuários' },
-  { value: 'pagamentos', label: 'Sistema de pagamentos' },
-  { value: 'upload', label: 'Upload de arquivos' },
-  { value: 'chat', label: 'Chat/Mensagens em tempo real' },
-  { value: 'api-externa', label: 'Integração com APIs externas' },
-  { value: 'busca', label: 'Sistema de busca' },
-  { value: 'multi-idioma', label: 'Multi-idioma (i18n)' },
-  { value: 'offline', label: 'Funciona offline' },
-  { value: 'notificacoes', label: 'Notificações push' },
-  { value: 'geolocalizacao', label: 'GPS/Geolocalização' },
+  { value: 'auth', label: 'Autenticação (Login/Cadastro)' },
+  { value: 'pagamentos', label: 'Gateway de Pagamentos (Stripe/Pix)' },
+  { value: 'upload', label: 'Upload de Arquivos/Imagens' },
+  { value: 'chat', label: 'Chat em Tempo Real (WebSockets)' },
+  { value: 'api-externa', label: 'Integração com APIs Terceiras' },
+  { value: 'busca', label: 'Sistema de Busca/Filtros' },
+  { value: 'multi-idioma', label: 'Suporte a Vários Idiomas (i18n)' },
+  { value: 'offline', label: 'Modo Offline / PWA' },
+  { value: 'notificacoes', label: 'Notificações Push' },
+  { value: 'geolocalizacao', label: 'GPS e Mapas' },
 ];
 
 export const websiteTypeOptions = [
   { value: 'landing-page', label: 'Landing Page' },
-  { value: 'institucional', label: 'Institucional' },
+  { value: 'institucional', label: 'Site Institucional' },
   { value: 'portfolio', label: 'Portfólio' },
-  { value: 'blog', label: 'Blog' },
-  { value: 'ecommerce', label: 'E-commerce' },
-  { value: 'dashboard', label: 'Dashboard/Painel' },
-  { value: 'saas', label: 'SaaS/Plataforma' },
+  { value: 'blog', label: 'Blog / Notícias' },
+  { value: 'ecommerce', label: 'E-commerce / Loja Virtual' },
+  { value: 'dashboard', label: 'Dashboard / ERP' },
+  { value: 'saas', label: 'Plataforma SaaS' },
 ];
 
 export const websitePageOptions = [
   { value: 'Home', label: 'Home' },
   { value: 'Sobre', label: 'Sobre' },
   { value: 'Serviços', label: 'Serviços' },
-  { value: 'Portfólio', label: 'Portfólio' },
+  { value: 'Projetos', label: 'Projetos' },
   { value: 'Blog', label: 'Blog' },
   { value: 'Contato', label: 'Contato' },
+  { value: 'Checkout', label: 'Checkout' },
+  { value: 'Perfil', label: 'Perfil do Usuário' },
   { value: 'FAQ', label: 'FAQ' },
-  { value: 'Preços', label: 'Preços' },
-  { value: 'Login', label: 'Login' },
-  { value: 'Dashboard', label: 'Dashboard' },
+  { value: 'Admin', label: 'Área do Administrador' },
 ];
 
 export const collectedDataOptions = [
-  { value: 'nome', label: 'Nome' },
-  { value: 'email', label: 'Email' },
-  { value: 'telefone', label: 'Telefone' },
-  { value: 'endereco', label: 'Endereço' },
-  { value: 'cpf', label: 'CPF/CNPJ' },
-  { value: 'ip', label: 'Endereço IP' },
-  { value: 'pagamento', label: 'Dados de pagamento' },
-  { value: 'localizacao', label: 'Localização' },
+  { value: 'nome', label: 'Nome Completo' },
+  { value: 'email', label: 'E-mail' },
+  { value: 'telefone', label: 'Telefone/WhatsApp' },
+  { value: 'endereco', label: 'Endereço Físico' },
+  { value: 'cpf', label: 'CPF / CNPJ' },
+  { value: 'ip', label: 'Log de IP' },
+  { value: 'pagamento', label: 'Dados de Cartão' },
+  { value: 'localizacao', label: 'Coordenadas GPS' },
 ];

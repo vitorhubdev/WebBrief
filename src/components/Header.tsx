@@ -2,14 +2,6 @@ import { useRef } from 'react';
 import { Sparkles, Github, FileJson, Trash2, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -38,19 +30,19 @@ export function Header({ onExport, onImport, onClear }: HeaderProps) {
   };
 
   return (
-    <header className="w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-primary-foreground" />
+    <header className="w-full h-16 glass border-b border-primary/10 sticky top-0 z-50 transform-gpu">
+      <div className="container mx-auto px-6 h-full flex items-center justify-between">
+        <div className="flex items-center gap-4 group cursor-pointer">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
+            <Sparkles className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-lg leading-tight">PromptGen</h1>
-            <p className="text-xs text-muted-foreground">Gerador Universal</p>
+            <h1 className="font-bold text-xl leading-none tracking-tight">PromptGen</h1>
+            <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground mt-1">Universal v2.0</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <input
             type="file"
             ref={fileInputRef}
@@ -58,97 +50,58 @@ export function Header({ onExport, onImport, onClear }: HeaderProps) {
             accept=".json,application/json"
             className="hidden"
           />
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => fileInputRef.current?.click()}
-            className="hidden sm:flex items-center gap-2"
-          >
-            <Upload className="w-4 h-4" />
-            <span className="hidden md:inline">Importar</span>
-          </Button>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onExport}
-            className="hidden sm:flex items-center gap-2"
-          >
-            <FileJson className="w-4 h-4" />
-            <span className="hidden md:inline">Exportar</span>
-          </Button>
+          <div className="hidden sm:flex items-center gap-1 bg-muted/40 p-1 rounded-xl">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+              className="h-8 px-3 rounded-lg hover:bg-background gap-2"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              <span className="text-xs font-semibold">Importar</span>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onExport}
+              className="h-8 px-3 rounded-lg hover:bg-background gap-2"
+            >
+              <FileJson className="w-3.5 h-3.5" />
+              <span className="text-xs font-semibold">Exportar</span>
+            </Button>
+          </div>
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
                 variant="ghost"
-                size="sm"
-                className="hidden sm:flex items-center gap-2 text-destructive hover:text-destructive"
+                size="icon"
+                className="w-9 h-9 rounded-xl text-destructive hover:bg-destructive/10"
               >
                 <Trash2 className="w-4 h-4" />
-                <span className="hidden md:inline">Limpar</span>
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="rounded-3xl glass-card">
               <AlertDialogHeader>
-                <AlertDialogTitle>Limpar todas as configurações?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Isso apagará todas as respostas do questionário. Esta ação não pode ser desfeita.
+                <AlertDialogTitle className="text-2xl font-bold">Reiniciar formulário?</AlertDialogTitle>
+                <AlertDialogDescription className="text-base">
+                  Isso apagará todas as respostas atuais. Esta ação é irreversível.
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={onClear} className="bg-destructive text-destructive-foreground">
-                  Limpar
+              <AlertDialogFooter className="mt-4">
+                <AlertDialogCancel className="rounded-xl border-none hover:bg-muted">Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={onClear} className="bg-destructive text-white rounded-xl hover:bg-destructive/90 transition-colors">
+                  Confirmar Limpeza
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="hidden sm:flex">
-                <span className="sr-only">Sobre</span>
-                <span className="text-sm font-medium">?</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-lg">
-              <DialogHeader>
-                <DialogTitle>Sobre o PromptGen</DialogTitle>
-                <DialogDescription>
-                  Gerador universal de prompts para qualquer tipo de aplicação
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 text-sm text-muted-foreground">
-                <p>
-                  O <strong>PromptGen</strong> cria prompts técnicos completos para IAs gerarem 
-                  código de qualidade. Suporta websites, apps mobile, CLI, GUI desktop, 
-                  containers e APIs.
-                </p>
-                <div className="space-y-2">
-                  <p className="font-medium text-foreground">Recursos:</p>
-                  <ul className="list-disc list-inside space-y-1">
-                    <li>7 tipos de aplicação suportados</li>
-                    <li>9 linguagens/stacks</li>
-                    <li>Presets pré-configurados</li>
-                    <li>Import/export de configurações</li>
-                    <li>Salvamento automático</li>
-                  </ul>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          <Button variant="ghost" size="icon" asChild>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:flex"
-            >
-              <Github className="w-5 h-5" />
-              <span className="sr-only">GitHub</span>
+          <Button variant="outline" size="icon" asChild className="w-9 h-9 rounded-xl border-primary/10 hover:bg-primary/5">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+              <Github className="w-4 h-4" />
             </a>
           </Button>
         </div>

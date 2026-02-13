@@ -29,13 +29,12 @@ export function WebsiteModule({ formData, updateField, toggleArrayField }: Websi
             <div
               key={option.value}
               onClick={() => updateField('websiteType', option.value)}
-              className={`p-3 rounded-lg border cursor-pointer transition-colors text-center ${
-                formData.websiteType === option.value
+              className={`p-3 rounded-lg border cursor-pointer transition-colors text-center overflow-hidden flex items-center justify-center min-h-[44px] ${formData.websiteType === option.value
                   ? 'border-primary bg-primary/5'
                   : 'hover:bg-muted/50'
-              }`}
+                }`}
             >
-              <span className="text-sm font-medium">{option.label}</span>
+              <span className="text-sm font-medium leading-tight whitespace-normal break-words">{option.label}</span>
             </div>
           ))}
         </div>
@@ -172,11 +171,10 @@ export function WebsiteModule({ formData, updateField, toggleArrayField }: Websi
             <div
               key={style}
               onClick={() => updateField('designStyle', style)}
-              className={`p-3 rounded-lg border cursor-pointer transition-colors text-center ${
-                formData.designStyle === style ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
-              }`}
+              className={`p-3 rounded-lg border cursor-pointer transition-colors text-center overflow-hidden flex items-center justify-center min-h-[44px] ${formData.designStyle === style ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
+                }`}
             >
-              <span className="text-sm capitalize">{style}</span>
+              <span className="text-sm capitalize leading-tight whitespace-normal break-words">{style}</span>
             </div>
           ))}
         </div>

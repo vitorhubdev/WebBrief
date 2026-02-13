@@ -31,12 +31,11 @@ export function GUIModule({ formData, updateField }: GUIModuleProps) {
             <div
               key={fw.value}
               onClick={() => updateField('guiFramework', fw.value)}
-              className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                formData.guiFramework === fw.value ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
-              }`}
+              className={`p-3 rounded-lg border cursor-pointer transition-colors overflow-hidden ${formData.guiFramework === fw.value ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
+                }`}
             >
-              <p className="font-medium text-sm">{fw.label}</p>
-              <p className="text-xs text-muted-foreground">{fw.desc}</p>
+              <p className="font-medium text-sm truncate">{fw.label}</p>
+              <p className="text-xs text-muted-foreground whitespace-normal break-words leading-tight">{fw.desc}</p>
             </div>
           ))}
         </div>
