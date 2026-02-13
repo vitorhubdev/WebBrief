@@ -189,6 +189,7 @@ export function generatePromptText(data: FormData): string {
 
 > **Gerado em:** ${dataFormatada}  
 > **Ferramenta:** PromptGen - Gerador Universal de Aplicações
+> **⚠️ PRIORIDADE ABSOLUTA:** Este prompt segue as **REGRAS UNIVERSAIS (Seção 7)**.
 
 ---
 
@@ -249,96 +250,214 @@ ${data.features.length > 0 ? data.features.map(f => `- ${getFeatureLabel(f)}`).j
 
 `;
 
+
   // Adicionar módulo específico
   prompt += generateSpecificModule(data);
 
   prompt += `
 
 ---
- 
- ## 7) 🤖 REGRAS UNIVERSAIS PARA GERAÇÃO DE CÓDIGO POR IA
- 
- > **Estas regras têm prioridade absoluta sobre qualquer outra instrução.**
- 
- ### 1. INTEGRIDADE DO CÓDIGO (Anti-Placeholder)
- - **PROIBIDO:** Comentários como "// ... resto do código", placeholders ou arquivos truncados.
- - **OBRIGATÓRIO:** Todo arquivo deve ser completo, funcional e com importações explícitas. Nunca trunque código.
- 
- ### 2. PADRÃO DE IDIOMA
- - **Código (variáveis, funções, classes):** 🇺🇸 INGLÊS.
- - **Comentários, UI/UX e README:** 🇧🇷 PORTUGUÊS (PT-BR).
- 
- ### 3. SEGURANÇA E QUALIDADE (Zero Hardcoding)
- - **Secrets:** Use .env e forneça .env.example. Nunca commite chaves ou tokens.
- - **Princípios:** SOLID, DRY, KISS, YAGNI. Nomes descritivos que revelam intenção.
- - **Tratamento de Erros:** Fail Fast, mensagens amigáveis ao usuário e logs detalhados para debug. Nunca silencie erros.
- 
- ### 4. ARQUITETURA E DOCUMENTAÇÃO
- - **Estrutura:** Camadas claras (UI → Aplicação → Domínio → Infra). Evite God Classes.
- - **README:** Deve conter Descrição, Pré-requisitos, Instalação, Como Rodar e Variáveis de Ambiente.
- 
- ### 5. DEFINITION OF DONE (DoD)
- - [ ] Compila/roda sem erros. README completo.
- - [ ] Secrets em .env. Testes passando (se aplicáveis).
- - [ ] Sem código morto ou comentado. Navegação por teclado funcional.
- 
- ---
- 
- ## 8) INSTRUÇÕES E OBSERVAÇÕES FINAIS
- 
- ### Observações do Projeto:
- ${data.notes || 'Nenhuma'}
- 
- ---
- 
- **IMPORTANTE:** Este prompt foi gerado automaticamente visando máxima fidelidade técnica. Revise e ajuste antes de enviar para a IA.
- 
- *PromptGen - Gerador Universal de Aplicações*`;
+
+`;
+  prompt += getUniversalRulesText();
+
+  prompt += `
+
+---
+
+## 8) INSTRUÇÕES E OBSERVAÇÕES FINAIS
+
+### Observações do Projeto:
+${data.notes || 'Nenhuma'}
+
+---
+
+**IMPORTANTE:** Este prompt foi gerado automaticamente visando máxima fidelidade técnica. Revise e ajuste antes de enviar para a IA.
+
+*PromptGen - Gerador Universal de Aplicações*`;
 
   return prompt;
 }
 
+function getUniversalRulesText(): string {
+  return `## 7) 🤖 REGRAS UNIVERSAIS PARA GERAÇÃO DE CÓDIGO POR IA
+
+> **Estas regras têm prioridade absoluta sobre qualquer outra instrução.**  
+> Aplicáveis a qualquer stack, linguagem ou tipo de projeto.
+
+---
+
+### 🚫 1. INTEGRIDADE DO CÓDIGO (Anti-Placeholder)
+**PROIBIDO:**
+- Comentários como \`// ... resto do código\` ou \`// ... implement logic here\`
+- Arquivos incompletos ou truncados
+- \`// ... imports here\` sem especificar as importações
+
+**OBRIGATÓRIO:**
+- **Todo arquivo deve ser completo e funcional** com todas as importações explícitas.
+- Se o arquivo for muito longo (>500 linhas), divida em múltiplos arquivos lógicos.
+- Nunca trunque código - entregue sempre a solução completa.
+
+---
+
+### 🌐 2. PADRÃO DE IDIOMA
+- **Código (variáveis, funções, classes):** 🇺🇸 INGLÊS.
+- **Comentários, UI/UX e README:** 🇧🇷 PORTUGUÊS (PT-BR).
+- **Justificativa:** Código em inglês é padrão global; documentação em português facilita manutenção.
+
+---
+
+### 🔒 3. SEGURANÇA POR PADRÃO (Zero Hardcoding)
+- **Secrets:** Use variáveis de ambiente (process.env ou similar). Forneça sempre \`.env.example\`.
+- **Validação:** Validar e sanitizar **TODOS** os inputs do usuário.
+- **Proteção:** Prevenir SQL Injection, XSS, CSRF e Path Traversal.
+- **Criptografia:** Hash de senhas forte (Argon2, bcrypt, scrypt). Logs nunca expõem dados sensíveis.
+
+---
+
+### 💎 4. QUALIDADE DE CÓDIGO
+- **Princípios:** SOLID, DRY, KISS, YAGNI.
+- **Código Profissional:** Nomes descritivos que revelam intenção. Funções pequenas (máximo 50 linhas).
+- **Imutabilidade:** Preferência por imutabilidade; mutação apenas quando necessário.
+
+---
+
+### 🏗️ 5. ARQUITETURA
+- **Camadas:** Separação clara: UI → Aplicação → Domínio → Infraestrutura.
+- **Proibido:** God Classes (>300 linhas), acoplamento forte, lógica de negócio na UI.
+- **Padrões:** Injeção de Dependências, uso de Interfaces/Abstrações sobre implementações concretas.
+
+---
+
+### ⚠️ 6. TRATAMENTO DE ERROS
+- **Fail Fast:** Valide inputs no início do fluxo.
+- **Erros Silenciosos:** PROIBIDO. Use try/catch com logs úteis e mensagens amigáveis ao usuário.
+- **Resiliência:** Retry logic para operações transientes e graceful degradation.
+
+---
+
+### 📚 7. DOCUMENTAÇÃO OBRIGATÓRIA
+- **README.md Mínimo:** Descrição, Pré-requisitos, Instalação (comandos executáveis), Como Rodar, Testes e Variáveis de Ambiente.
+- **Transparência:** Explicação clara da estrutura de pastas.
+
+---
+
+### 🧪 8. TESTES
+- **Obrigatório:** Testes unitários para lógica de domínio. Cobertura mínima alvo: 70%+.
+- **Isolamento:** Testes devem ser idependentes e os nomes devem documentar o comportamento esperado.
+
+---
+
+### ⚡ 9. PERFORMANCE
+- **Otimizações:** Lazy loading, paginação para listas grandes, cache e índices em banco de dados.
+- **Regra de Ouro:** "Primeiro correto e simples, depois rápido". Sem otimização prematura.
+
+---
+
+### ♿ 10. ACESSIBILIDADE (WCAG 2.1)
+- **Navegação:** Completa por teclado e foco visível.
+- **Visual:** Contraste mínimo 4.5:1 (WCAG AA). HTML semântico ou ARIA labels.
+- **Estados:** Loading, Empty, Error (claro + sugestão) e Success.
+
+---
+
+### 📦 11. DEPENDÊNCIAS
+- **Critérios:** Versões LTS/estáveis, bibliotecas mantidas (<6 meses) e licenças compatíveis (MIT/Apache).
+- **Gestão:** Commite lock files e realize auditoria de vulnerabilidades regularmente.
+
+---
+
+### ✅ DEFINITION OF DONE (DoD)
+- [ ] Compila/roda sem erros ou warnings.
+- [ ] README completo e atualizado com .env.example.
+- [ ] Testes passando e secrets protegidos em .env.
+- [ ] Código formatado consistentemente e sem comentários de código morto.
+- [ ] Navegação por teclado operacional.
+
+---
+
+### 🎯 PRINCÍPIOS NORTEADORES
+1. **Simplicidade** > Código "inteligente".
+2. **Pragmatismo** - Entregue valor, evite over-engineering.
+3. **Segurança by Design** - Requisito base, não opcional.
+4. **Código é Comunicação** - Escreva para humanos.
+
+---
+
+### 🚨 MODO DE EXECUÇÃO DA IA
+1. **Zero placeholders** - Nunca entregue código incompleto.
+2. **MVP Primeiro** - Escopo funcional antes de extras.
+3. **Justificativa** - Justifique escolhas de libs/frameworks em 1-2 linhas.
+4. **Funcional de Primeira** - O código deve rodar imediatamente após o setup.`;
+}
+
 // Implementação do formato TOON (Token-Oriented Object Notation)
-// Otimizado para baixo consumo de tokens em LLMs
+// Otimizado para baixo consumo de tokens em LLMs, mas mantendo a riqueza semântica
 export function generateTOON(data: FormData): string {
-  const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
-    if (value && value !== '' && (Array.isArray(value) ? value.length > 0 : true)) {
-      acc[key] = value;
-    }
-    return acc;
-  }, {} as any);
-
   let toon = `PROMPT_CONFIG [v2026]\n`;
-  toon += `PROJECT: ${cleanData.projectName || 'Unnamed'}\n`;
-  toon += `TYPE: ${cleanData.appType}\n`;
-  toon += `STACK: ${cleanData.stack}\n`;
 
-  toon += `\nCORE_SPECS:\n`;
-  const coreKeys = ['pitch', 'targetAudience', 'mainAction', 'scope', 'codeQuality', 'tests'];
-  coreKeys.forEach(key => {
-    if (cleanData[key]) toon += `  ${key.toUpperCase()}: ${cleanData[key]}\n`;
-  });
+  // 1. Contexto Geral
+  toon += `\nSECTION: GENERAL_CONTEXT\n`;
+  toon += `  TYPE: ${getAppTypeLabel(data.appType)}\n`;
+  toon += `  STACK: ${getStackLabel(data.stack)}\n`;
+  toon += `  PROJECT_NAME: ${data.projectName || 'Not Defined'}\n`;
+  toon += `  PITCH: ${data.pitch || 'Not Defined'}\n`;
+  toon += `  TARGET_AUDIENCE: ${data.targetAudience || 'Not Defined'}\n`;
+  toon += `  MAIN_ACTION: ${data.mainAction || 'Not Defined'}\n`;
 
-  if (cleanData.features?.length > 0) {
-    toon += `\nFEATURES: [len:${cleanData.features.length}]\n`;
-    cleanData.features.forEach((f: string) => toon += `  - ${f}\n`);
+  // 2. Requisitos Funcionais
+  toon += `\nSECTION: FUNCTIONAL_REQUIREMENTS\n`;
+  if (data.features.length > 0) {
+    toon += `  FEATURES_LIST:\n`;
+    data.features.forEach(f => toon += `    - ${getFeatureLabel(f)}\n`);
+  } else {
+    toon += `  FEATURES_LIST: To be defined by AI\n`;
   }
+  toon += `  AUTH: ${data.hasAuth === 'sim' ? `Yes (${data.authType})` : 'Not Required'}\n`;
+  toon += `  DATA_STORAGE: ${data.storesData === 'sim' ? `Yes (${data.storageType})` : 'No'}\n`;
+  toon += `  INTEGRATIONS: ${data.integrations || 'None'}\n`;
 
-  toon += `\nMODULE_DATA:\n`;
-  Object.entries(cleanData).forEach(([key, value]) => {
-    if (![...coreKeys, 'projectName', 'appType', 'stack', 'features'].includes(key) && !key.includes('credits')) {
-      if (Array.isArray(value)) {
-        toon += `  ${key}: ${value.join(',')}\n`;
-      } else {
-        toon += `  ${key}: ${value}\n`;
-      }
-    }
-  });
+  // 3. Requisitos Não-Funcionais
+  toon += `\nSECTION: NON_FUNCTIONAL_REQUIREMENTS\n`;
+  toon += `  OFFLINE_SUPPORT: ${getOfflineLabel(data.offlineSupport)}\n`;
+  toon += `  PERFORMANCE: ${data.performanceTarget || 'Standard'}\n`;
+  toon += `  ACCESSIBILITY: ${data.accessibility === 'basica' ? 'Basic' : 'Advanced (WCAG 2.1 AA)'}\n`;
+  toon += `  LANGUAGES: ${data.languages === 'ptbr' ? 'Portuguese (BR)' : 'Multi-language'}\n`;
+  toon += `  THEME: ${getThemeLabel(data.theme)}\n`;
+
+  // 4. Segurança e Legal
+  toon += `\nSECTION: SECURITY_AND_LEGAL\n`;
+  toon += `  DATA_COLLECTION: ${data.collectsData === 'sim' ? `Yes (${data.collectedDataTypes.join(', ')})` : 'No'}\n`;
+  toon += `  REGULATED_SECTOR: ${data.regulatedSector === 'nao' ? 'No' : data.regulatedSector}\n`;
+  toon += `  CONTENT_LICENSE: ${data.licensesSource}\n`;
+  toon += `  CREDITS: ${data.creditsText || 'None'} (${data.creditsLocation || 'README'})\n`;
+
+  // 5. Entregáveis
+  toon += `\nSECTION: DELIVERABLES_AND_QUALITY\n`;
+  toon += `  ITEMS: ${data.deliverables.map(d => getDeliverableLabel(d)).join(', ')}\n`;
+  toon += `  SCOPE: ${data.scope === 'mvp' ? 'MVP' : 'Full'}\n`;
+  toon += `  CODE_QUALITY: ${getQualityLabel(data.codeQuality)}\n`;
+  toon += `  TESTS: ${getTestsLabel(data.tests)}\n`;
+  toon += `  SECURITY_LEVEL: ${getSecurityLabel(data.securityLevel)}\n`;
+
+  // 6. Módulo Específico (Passamos o texto renderizado para manter as instruções ricas)
+  toon += `\nSECTION: SPECIFIC_MODULE_${data.appType.toUpperCase()}\n`;
+  const specificModuleText = generateSpecificModule(data).replace(/\n/g, '\n  '); // Indentar conteúdo
+  toon += `  DETAILS:\n  ${specificModuleText}\n`;
+
+  // 7. Regras Universais (Integradas)
+  toon += `\nSECTION: UNIVERSAL_AI_RULES\n`;
+  const rules = getUniversalRulesText().replace(/\n/g, '\n  ');
+  toon += `  ${rules}\n`;
+
+  // 8. Notas Finais
+  toon += `\nSECTION: FINAL_NOTES\n`;
+  toon += `  NOTES: ${data.notes || 'None'}\n`;
 
   return toon;
 }
 
-// Formato XML para estruturação hierárquica clara
+// Formato XML para estruturação hierárquica clara e rica
 export function generateXML(data: FormData): string {
   const escape = (str: any) => String(str).replace(/[<>&"']/g, (c) => {
     switch (c) {
@@ -353,37 +472,71 @@ export function generateXML(data: FormData): string {
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   xml += `<PromptConfig version="2026">\n`;
-  xml += `  <ProjectName>${escape(data.projectName || 'Unnamed')}</ProjectName>\n`;
-  xml += `  <AppType>${escape(data.appType)}</AppType>\n`;
-  xml += `  <Stack>${escape(data.stack)}</Stack>\n`;
 
-  xml += `  <CoreSpecs>\n`;
-  const coreKeys = ['pitch', 'targetAudience', 'mainAction', 'scope', 'codeQuality', 'tests'];
-  coreKeys.forEach(key => {
-    const val = (data as any)[key];
-    if (val) xml += `    <${key}>${escape(val)}</${key}>\n`;
-  });
-  xml += `  </CoreSpecs>\n`;
+  // 1. Contexto
+  xml += `  <GeneralContext>\n`;
+  xml += `    <AppType>${escape(getAppTypeLabel(data.appType))}</AppType>\n`;
+  xml += `    <Stack>${escape(getStackLabel(data.stack))}</Stack>\n`;
+  xml += `    <ProjectName>${escape(data.projectName || 'Not Defined')}</ProjectName>\n`;
+  xml += `    <Pitch>${escape(data.pitch || 'Not Defined')}</Pitch>\n`;
+  xml += `    <TargetAudience>${escape(data.targetAudience || 'Not Defined')}</TargetAudience>\n`;
+  xml += `    <MainAction>${escape(data.mainAction || 'Not Defined')}</MainAction>\n`;
+  xml += `  </GeneralContext>\n`;
 
-  if (data.features?.length > 0) {
-    xml += `  <Features>\n`;
-    data.features.forEach((f: string) => xml += `    <Feature>${escape(f)}</Feature>\n`);
-    xml += `  </Features>\n`;
+  // 2. Funcionais
+  xml += `  <FunctionalRequirements>\n`;
+  if (data.features.length > 0) {
+    xml += `    <Features>\n`;
+    data.features.forEach(f => xml += `      <Feature>${escape(getFeatureLabel(f))}</Feature>\n`);
+    xml += `    </Features>\n`;
   }
+  xml += `    <Auth>${escape(data.hasAuth === 'sim' ? data.authType : 'None')}</Auth>\n`;
+  xml += `    <DataStorage>${escape(data.storesData === 'sim' ? data.storageType : 'None')}</DataStorage>\n`;
+  xml += `    <Integrations>${escape(data.integrations || 'None')}</Integrations>\n`;
+  xml += `  </FunctionalRequirements>\n`;
 
-  xml += `  <ModuleData>\n`;
-  Object.entries(data).forEach(([key, value]) => {
-    if (![...coreKeys, 'projectName', 'appType', 'stack', 'features'].includes(key)) {
-      if (Array.isArray(value)) {
-        xml += `    <${key}>\n`;
-        value.forEach(item => xml += `      <Item>${escape(item)}</Item>\n`);
-        xml += `    </${key}>\n`;
-      } else if (value !== '' && value !== null && value !== undefined) {
-        xml += `    <${key}>${escape(value)}</${key}>\n`;
-      }
-    }
-  });
-  xml += `  </ModuleData>\n`;
+  // 3. Não-Funcionais
+  xml += `  <NonFunctionalRequirements>\n`;
+  xml += `    <OfflineSupport>${escape(getOfflineLabel(data.offlineSupport))}</OfflineSupport>\n`;
+  xml += `    <PerformanceTarget>${escape(data.performanceTarget || 'Standard')}</PerformanceTarget>\n`;
+  xml += `    <Accessibility>${escape(data.accessibility)}</Accessibility>\n`;
+  xml += `    <Languages>${escape(data.languages)}</Languages>\n`;
+  xml += `    <Theme>${escape(getThemeLabel(data.theme))}</Theme>\n`;
+  xml += `  </NonFunctionalRequirements>\n`;
+
+  // 4. Segurança
+  xml += `  <SecurityAndLegal>\n`;
+  xml += `    <DataCollection>${escape(data.collectsData === 'sim' ? 'Yes' : 'No')}</DataCollection>\n`;
+  if (data.collectsData === 'sim') {
+    xml += `    <CollectedTypes>${escape(data.collectedDataTypes.join(', '))}</CollectedTypes>\n`;
+  }
+  xml += `    <RegulatedSector>${escape(data.regulatedSector)}</RegulatedSector>\n`;
+  xml += `    <ContentLicense>${escape(data.licensesSource)}</ContentLicense>\n`;
+  xml += `    <Credits>${escape(data.creditsText || 'None')}</Credits>\n`;
+  xml += `  </SecurityAndLegal>\n`;
+
+  // 5. Entregáveis
+  xml += `  <Deliverables>\n`;
+  data.deliverables.forEach(d => xml += `    <Item>${escape(getDeliverableLabel(d))}</Item>\n`);
+  xml += `    <Scope>${escape(data.scope)}</Scope>\n`;
+  xml += `    <CodeQuality>${escape(getQualityLabel(data.codeQuality))}</CodeQuality>\n`;
+  xml += `    <Tests>${escape(getTestsLabel(data.tests))}</Tests>\n`;
+  xml += `    <SecurityLevel>${escape(getSecurityLabel(data.securityLevel))}</SecurityLevel>\n`;
+  xml += `  </Deliverables>\n`;
+
+  // 6. Módulo Específico (CDATA para conteúdo rico)
+  xml += `  <SpecificModule type="${escape(data.appType)}">\n`;
+  xml += `    <![CDATA[\n${generateSpecificModule(data)}\n    ]]>\n`;
+  xml += `  </SpecificModule>\n`;
+
+  // 7. Regras Universais (CDATA para formatação MD preservada)
+  xml += `  <UniversalRules>\n`;
+  xml += `    <![CDATA[\n${getUniversalRulesText()}\n    ]]>\n`;
+  xml += `  </UniversalRules>\n`;
+
+  // 8. Notas
+  xml += `  <FinalNotes>${escape(data.notes || 'None')}</FinalNotes>\n`;
+
   xml += `</PromptConfig>`;
 
   return xml;
