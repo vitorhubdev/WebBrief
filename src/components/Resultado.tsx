@@ -1,15 +1,21 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Check, Copy, RotateCcw, Download, Sparkles, FileJson, Zap, HelpCircle } from 'lucide-react';
+import { Check, Copy, RotateCcw, Download, Sparkles, FileJson, Zap, HelpCircle, FileCode, ArrowDownRight, ArrowUpRight } from 'lucide-react';
+import { generateTOON, generateXML } from '@/hooks/usePromptGenerator';
+import type { FormData } from '@/types';
+import { useMemo } from 'react';
 
 interface ResultadoProps {
   prompt: string;
   onReset: () => void;
-  onExport: () => void;
+  onExport: () => void; // This will be JSON
+  onExportToon: () => void;
+  onExportXml: () => void;
+  formData: FormData;
 }
 
-export function Resultado({ prompt, onReset, onExport }: ResultadoProps) {
+export function Resultado({ prompt, onReset, onExport, onExportToon, onExportXml, formData }: ResultadoProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -21,6 +27,30 @@ export function Resultado({ prompt, onReset, onExport }: ResultadoProps) {
       console.error('Erro ao copiar:', err);
     }
   };
+
+  const stats = useMemo(() => {
+    const md = prompt;
+    const json = JSON.stringify(formData, null, 2);
+    const toon = generateTOON(formData);
+    const xml = generateXML(formData);
+
+    const calc = (text: string) => ({
+      tokens: Math.ceil(text.length / 4),
+      chars: text.length
+    });
+
+    const mdStats = calc(md);
+    const jsonStats = calc(json);
+    const toonStats = calc(toon);
+    const xmlStats = calc(xml);
+
+    return [
+      { name: 'Markdown (Visual)', stats: mdStats, diff: 0, color: 'text-primary' },
+      { name: 'TOON (Otimizado)', stats: toonStats, diff: toonStats.tokens - mdStats.tokens, color: 'text-emerald-500' },
+      { name: 'XML (Estruturado)', stats: xmlStats, diff: xmlStats.tokens - mdStats.tokens, color: 'text-amber-500' },
+      { name: 'JSON (Config)', stats: jsonStats, diff: jsonStats.tokens - mdStats.tokens, color: 'text-blue-500' },
+    ];
+  }, [prompt, formData]);
 
   const handleDownload = () => {
     const blob = new Blob([prompt], { type: 'text/markdown' });
@@ -113,13 +143,33 @@ export function Resultado({ prompt, onReset, onExport }: ResultadoProps) {
               </Button>
 
               <Button
+                onClick={onExportToon}
+                variant="outline"
+                className="h-14 px-6 rounded-2xl border-primary/10 hover:bg-primary/5 hover:border-primary/20 font-bold gap-2 group"
+                title="Exportar no formato estruturado TOON (Token-Efficient)"
+              >
+                <Zap className="w-5 h-5 text-yellow-500 fill-yellow-500 group-hover:scale-110 transition-transform" />
+                <span className="hidden sm:inline">Exportar TOON</span>
+              </Button>
+
+              <Button
                 onClick={onExport}
                 variant="outline"
                 className="h-14 px-6 rounded-2xl border-primary/10 hover:bg-primary/5 hover:border-primary/20 font-bold gap-2 group"
                 aria-label="Exportar configurações em JSON"
               >
                 <FileJson className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                <span className="hidden sm:inline">Exportar Config</span>
+                <span className="hidden sm:inline">JSON</span>
+              </Button>
+
+              <Button
+                onClick={onExportXml}
+                variant="outline"
+                className="h-14 px-6 rounded-2xl border-primary/10 hover:bg-primary/5 hover:border-primary/20 font-bold gap-2 group"
+                title="Exportar no formato estruturado XML"
+              >
+                <FileCode className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <span className="hidden sm:inline">XML</span>
               </Button>
 
               <Button
@@ -132,6 +182,56 @@ export function Resultado({ prompt, onReset, onExport }: ResultadoProps) {
               </Button>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Comparison Table */}
+      <div className="glass-card rounded-[2.5rem] overflow-hidden border-primary/10 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+        <header className="px-8 py-6 bg-primary/5 border-b border-primary/5">
+          <h3 className="text-lg font-bold flex items-center gap-2">
+            <Zap className="w-5 h-5 text-yellow-500" />
+            Comparativo de Eficiência (Tokens)
+          </h3>
+          <p className="text-xs text-muted-foreground">Compare qual formato consome menos recursos da sua IA.</p>
+        </header>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead>
+              <tr className="border-b border-primary/5 bg-muted/20">
+                <th className="px-8 py-4 font-bold">Formato</th>
+                <th className="px-8 py-4 font-bold">Tokens Est.</th>
+                <th className="px-8 py-4 font-bold">Diferença</th>
+                <th className="px-8 py-4 font-bold">Uso Recomendado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {stats.map((row, i) => (
+                <tr key={i} className="border-b border-primary/5 hover:bg-primary/5 transition-colors">
+                  <td className={`px-8 py-4 font-bold ${row.color}`}>{row.name}</td>
+                  <td className="px-8 py-4 font-mono">{row.stats.tokens}</td>
+                  <td className="px-8 py-4 font-mono font-bold">
+                    {row.diff === 0 ? (
+                      <span className="text-muted-foreground">-</span>
+                    ) : row.diff < 0 ? (
+                      <span className="text-emerald-500 flex items-center gap-1">
+                        <ArrowDownRight className="w-3 h-3" /> {row.diff}
+                      </span>
+                    ) : (
+                      <span className="text-destructive flex items-center gap-1">
+                        <ArrowUpRight className="w-3 h-3" /> +{row.diff}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-8 py-4 text-xs text-muted-foreground">
+                    {row.name.includes('Markdown') && 'Melhor para leitura humana e edição.'}
+                    {row.name.includes('TOON') && 'Máxima economia de tokens (IA-First).'}
+                    {row.name.includes('XML') && 'Melhor para organização de dados complexos.'}
+                    {row.name.includes('JSON') && 'Ideal para salvar configurações no app.'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 

@@ -10,6 +10,7 @@ export function usePromptGenerator() {
   const [showResult, setShowResult] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [promptStats, setPromptStats] = useState({ tokens: 0, characters: 0, lines: 0 });
 
   // Carregar configuração salva ao iniciar
   useEffect(() => {
@@ -23,6 +24,16 @@ export function usePromptGenerator() {
       }
     }
   }, []);
+
+  // Calcular estatísticas em tempo real
+  useEffect(() => {
+    const preview = generatePromptText(formData);
+    setPromptStats({
+      tokens: Math.ceil(preview.length / 4),
+      characters: preview.length,
+      lines: preview.split('\n').length
+    });
+  }, [formData]);
 
   // Salvar configuração automaticamente
   useEffect(() => {
@@ -73,6 +84,32 @@ export function usePromptGenerator() {
     URL.revokeObjectURL(url);
   }, [formData]);
 
+  const exportTOON = useCallback(() => {
+    const toonData = generateTOON(formData);
+    const blob = new Blob([toonData], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `prompt-config-${formData.projectName || 'untitled'}.toon`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [formData]);
+
+  const exportXML = useCallback(() => {
+    const xmlData = generateXML(formData);
+    const blob = new Blob([xmlData], { type: 'application/xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `prompt-config-${formData.projectName || 'untitled'}.xml`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [formData]);
+
   const importConfig = useCallback((file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -95,11 +132,60 @@ export function usePromptGenerator() {
   }, []);
 
   const generatePrompt = useCallback(() => {
-    const data = formData;
-    const hoje = new Date();
-    const dataFormatada = hoje.toLocaleDateString('pt-BR');
+    const prompt = generatePromptText(formData);
+    setGeneratedPrompt(prompt);
+    setShowResult(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [formData]);
 
-    let prompt = `# PROMPT PARA CRIAÇÃO DE APLICAÇÃO
+  const resetForm = useCallback(() => {
+    setFormData(initialFormData);
+    setGeneratedPrompt('');
+    setShowResult(false);
+    setCurrentStep(1);
+    setShowAdvanced(false);
+    localStorage.removeItem(STORAGE_KEY);
+  }, []);
+
+  const copyToClipboard = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(generatedPrompt);
+      return true;
+    } catch (err) {
+      console.error('Erro ao copiar:', err);
+      return false;
+    }
+  }, [generatedPrompt]);
+
+  return {
+    formData,
+    generatedPrompt,
+    showResult,
+    currentStep,
+    showAdvanced,
+    setCurrentStep,
+    setShowAdvanced,
+    updateField,
+    toggleArrayField,
+    loadPreset,
+    generatePrompt,
+    resetForm,
+    copyToClipboard,
+    exportConfig,
+    exportTOON,
+    exportXML,
+    importConfig,
+    clearSavedData,
+    promptStats,
+    presets,
+  };
+}
+
+export function generatePromptText(data: FormData): string {
+  const hoje = new Date();
+  const dataFormatada = hoje.toLocaleDateString('pt-BR');
+
+  let prompt = `# PROMPT PARA CRIAÇÃO DE APLICAÇÃO
 
 > **Gerado em:** ${dataFormatada}  
 > **Ferramenta:** PromptGen - Gerador Universal de Aplicações
@@ -163,88 +249,144 @@ ${data.features.length > 0 ? data.features.map(f => `- ${getFeatureLabel(f)}`).j
 
 `;
 
-    // Adicionar módulo específico
-    prompt += generateSpecificModule(data);
+  // Adicionar módulo específico
+  prompt += generateSpecificModule(data);
 
-    prompt += `
-
----
-
-## 7) INSTRUÇÕES FINAIS
-
-### Regras Obrigatórias:
-1. **Use versões mais recentes estáveis (LTS)** de todas as dependências
-2. **Evite bibliotecas obsoletas** - verifique último commit (< 1 ano)
-3. **Código limpo e bem documentado** - comentários em português
-4. **Error handling robusto** - trate todos os erros com mensagens amigáveis
-5. **Não exponha segredos** - use .env e arquivos de exemplo
-6. **Sem gambiarras** - código profissional e mantenível
-
-### Estrutura de Pastas:
-- Organize em pastas claras e intuitivas
-- Separe responsabilidades (MVC, camadas, ou arquitetura escolhida)
-- Inclua README completo com instruções
-
-### Definition of Done (DoD):
-- [ ] Projeto roda localmente sem erros
-- [ ] Happy path funcionando
-- [ ] Logs/erros amigáveis
-- [ ] Sem dependências obsoletas
-- [ ] Sem conteúdo/licenças duvidosas
-- [ ] Instruções de build/deploy claras
-
-### Observações adicionais:
-${data.notes || 'Nenhuma'}
+  prompt += `
 
 ---
+ 
+ ## 7) 🤖 REGRAS UNIVERSAIS PARA GERAÇÃO DE CÓDIGO POR IA
+ 
+ > **Estas regras têm prioridade absoluta sobre qualquer outra instrução.**
+ 
+ ### 1. INTEGRIDADE DO CÓDIGO (Anti-Placeholder)
+ - **PROIBIDO:** Comentários como "// ... resto do código", placeholders ou arquivos truncados.
+ - **OBRIGATÓRIO:** Todo arquivo deve ser completo, funcional e com importações explícitas. Nunca trunque código.
+ 
+ ### 2. PADRÃO DE IDIOMA
+ - **Código (variáveis, funções, classes):** 🇺🇸 INGLÊS.
+ - **Comentários, UI/UX e README:** 🇧🇷 PORTUGUÊS (PT-BR).
+ 
+ ### 3. SEGURANÇA E QUALIDADE (Zero Hardcoding)
+ - **Secrets:** Use .env e forneça .env.example. Nunca commite chaves ou tokens.
+ - **Princípios:** SOLID, DRY, KISS, YAGNI. Nomes descritivos que revelam intenção.
+ - **Tratamento de Erros:** Fail Fast, mensagens amigáveis ao usuário e logs detalhados para debug. Nunca silencie erros.
+ 
+ ### 4. ARQUITETURA E DOCUMENTAÇÃO
+ - **Estrutura:** Camadas claras (UI → Aplicação → Domínio → Infra). Evite God Classes.
+ - **README:** Deve conter Descrição, Pré-requisitos, Instalação, Como Rodar e Variáveis de Ambiente.
+ 
+ ### 5. DEFINITION OF DONE (DoD)
+ - [ ] Compila/roda sem erros. README completo.
+ - [ ] Secrets em .env. Testes passando (se aplicáveis).
+ - [ ] Sem código morto ou comentado. Navegação por teclado funcional.
+ 
+ ---
+ 
+ ## 8) INSTRUÇÕES E OBSERVAÇÕES FINAIS
+ 
+ ### Observações do Projeto:
+ ${data.notes || 'Nenhuma'}
+ 
+ ---
+ 
+ **IMPORTANTE:** Este prompt foi gerado automaticamente visando máxima fidelidade técnica. Revise e ajuste antes de enviar para a IA.
+ 
+ *PromptGen - Gerador Universal de Aplicações*`;
 
-**IMPORTANTE:** Este prompt foi gerado automaticamente. Revise e ajuste conforme necessário antes de enviar para a IA.
+  return prompt;
+}
 
-*PromptGen - Gerador Universal de Aplicações*`;
-
-    setGeneratedPrompt(prompt);
-    setShowResult(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [formData]);
-
-  const resetForm = useCallback(() => {
-    setFormData(initialFormData);
-    setGeneratedPrompt('');
-    setShowResult(false);
-    setCurrentStep(1);
-    setShowAdvanced(false);
-    localStorage.removeItem(STORAGE_KEY);
-  }, []);
-
-  const copyToClipboard = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(generatedPrompt);
-      return true;
-    } catch (err) {
-      console.error('Erro ao copiar:', err);
-      return false;
+// Implementação do formato TOON (Token-Oriented Object Notation)
+// Otimizado para baixo consumo de tokens em LLMs
+export function generateTOON(data: FormData): string {
+  const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
+    if (value && value !== '' && (Array.isArray(value) ? value.length > 0 : true)) {
+      acc[key] = value;
     }
-  }, [generatedPrompt]);
+    return acc;
+  }, {} as any);
 
-  return {
-    formData,
-    generatedPrompt,
-    showResult,
-    currentStep,
-    showAdvanced,
-    setCurrentStep,
-    setShowAdvanced,
-    updateField,
-    toggleArrayField,
-    loadPreset,
-    generatePrompt,
-    resetForm,
-    copyToClipboard,
-    exportConfig,
-    importConfig,
-    clearSavedData,
-    presets,
-  };
+  let toon = `PROMPT_CONFIG [v2026]\n`;
+  toon += `PROJECT: ${cleanData.projectName || 'Unnamed'}\n`;
+  toon += `TYPE: ${cleanData.appType}\n`;
+  toon += `STACK: ${cleanData.stack}\n`;
+
+  toon += `\nCORE_SPECS:\n`;
+  const coreKeys = ['pitch', 'targetAudience', 'mainAction', 'scope', 'codeQuality', 'tests'];
+  coreKeys.forEach(key => {
+    if (cleanData[key]) toon += `  ${key.toUpperCase()}: ${cleanData[key]}\n`;
+  });
+
+  if (cleanData.features?.length > 0) {
+    toon += `\nFEATURES: [len:${cleanData.features.length}]\n`;
+    cleanData.features.forEach((f: string) => toon += `  - ${f}\n`);
+  }
+
+  toon += `\nMODULE_DATA:\n`;
+  Object.entries(cleanData).forEach(([key, value]) => {
+    if (![...coreKeys, 'projectName', 'appType', 'stack', 'features'].includes(key) && !key.includes('credits')) {
+      if (Array.isArray(value)) {
+        toon += `  ${key}: ${value.join(',')}\n`;
+      } else {
+        toon += `  ${key}: ${value}\n`;
+      }
+    }
+  });
+
+  return toon;
+}
+
+// Formato XML para estruturação hierárquica clara
+export function generateXML(data: FormData): string {
+  const escape = (str: any) => String(str).replace(/[<>&"']/g, (c) => {
+    switch (c) {
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '&': return '&amp;';
+      case '"': return '&quot;';
+      case "'": return '&apos;';
+      default: return c;
+    }
+  });
+
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<PromptConfig version="2026">\n`;
+  xml += `  <ProjectName>${escape(data.projectName || 'Unnamed')}</ProjectName>\n`;
+  xml += `  <AppType>${escape(data.appType)}</AppType>\n`;
+  xml += `  <Stack>${escape(data.stack)}</Stack>\n`;
+
+  xml += `  <CoreSpecs>\n`;
+  const coreKeys = ['pitch', 'targetAudience', 'mainAction', 'scope', 'codeQuality', 'tests'];
+  coreKeys.forEach(key => {
+    const val = (data as any)[key];
+    if (val) xml += `    <${key}>${escape(val)}</${key}>\n`;
+  });
+  xml += `  </CoreSpecs>\n`;
+
+  if (data.features?.length > 0) {
+    xml += `  <Features>\n`;
+    data.features.forEach((f: string) => xml += `    <Feature>${escape(f)}</Feature>\n`);
+    xml += `  </Features>\n`;
+  }
+
+  xml += `  <ModuleData>\n`;
+  Object.entries(data).forEach(([key, value]) => {
+    if (![...coreKeys, 'projectName', 'appType', 'stack', 'features'].includes(key)) {
+      if (Array.isArray(value)) {
+        xml += `    <${key}>\n`;
+        value.forEach(item => xml += `      <Item>${escape(item)}</Item>\n`);
+        xml += `    </${key}>\n`;
+      } else if (value !== '' && value !== null && value !== undefined) {
+        xml += `    <${key}>${escape(value)}</${key}>\n`;
+      }
+    }
+  });
+  xml += `  </ModuleData>\n`;
+  xml += `</PromptConfig>`;
+
+  return xml;
 }
 
 // Funções auxiliares
@@ -423,9 +565,9 @@ function generateiOSModule(data: FormData): string {
 
 ### Requisitos técnicos específicos:
 - Linguagem: Swift
-- Arquitetura: MVVM ou Clean Architecture
+- Arquitetura: MVVM or Clean Architecture
 - Async: async/await (Swift 5.5+)
-- Persistência: Core Data ou SwiftData
+- Persistência: Core Data or SwiftData
 - Testes: XCTest`;
 }
 
@@ -440,7 +582,7 @@ function generateCLIModule(data: FormData): string {
 **Instalação:** ${data.cliInstall}
 
 ### Requisitos técnicos específicos:
-- CLI framework: Cobra (Go), clap (Rust), Click (Python), ou Commander (TS)
+- CLI framework: Cobra (Go), clap (Rust), Click (Python), or Commander (TS)
 - Cores no terminal: suportar (chalk, colored, etc.)
 - Progress bars: para operações longas
 - Validação de inputs: robusta
@@ -458,7 +600,7 @@ function generateGUIModule(data: FormData): string {
 **Empacotamento:** ${data.guiPackaging}
 
 ### Requisitos técnicos específicos:
-- Framework UI: Tauri (Rust+Web), Electron, Flutter Desktop, ou Qt
+- Framework UI: Tauri (Rust+Web), Electron, Flutter Desktop, or Qt
 - State management: conforme stack
 - Acesso ao sistema: permissões adequadas
 - Notificações do SO: suportar
@@ -477,17 +619,17 @@ function generateDockerModule(data: FormData): string {
 **Docker Compose:** ${data.dockerCompose === 'sim' ? `Sim (${data.dockerServices})` : 'Não'}
 
 ### Requisitos técnicos específicos:
-- Base image: Alpine ou Distroless (minimal)
+- Base image: Alpine or Distroless (minimal)
 - Layer caching: otimizar para rebuild rápido
 - .dockerignore: arquivo completo
 - Labels: incluir metadata
-- Security scanning: Trivy ou similar (recomendado)
-- Compatibilidade: Docker e Podman`;
+- Security scanning: Trivy or similar (recomendado)
+- Compatibilidade: Docker and Podman`;
 }
 
 function generateAPIModule(data: FormData): string {
   return `**Tipo de API:** ${data.apiType.toUpperCase()}
-**Framework:** ${data.apiFramework || 'A ser sugerido pela IA (Fiber, Gin, Axum, FastAPI ou ASP.NET Core)'}
+**Framework:** ${data.apiFramework || 'A ser sugerido pela IA (Fiber, Gin, Axum, FastAPI or ASP.NET Core)'}
 **Domínio do negócio:** ${data.apiDomain}
 **Recursos principais:** ${data.apiResources}
 **Autenticação/Autorização:** ${data.apiAuth}
@@ -504,7 +646,7 @@ ${data.apiSchema ? `\`\`\`\n${data.apiSchema}\n\`\`\`` : 'Não fornecido (IA dev
 
 ### Requisitos técnicos específicos:
 - Framework: Echo/Fiber (Go), Axum (Rust), FastAPI (Python), Express/NestJS (TS)
-- Validação: JSON Schema ou similar
+- Validação: JSON Schema or similar
 - Serialização: JSON (padrão)
 - Logging: estruturado (JSON)
 - Middlewares: CORS, recovery, request ID

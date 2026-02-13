@@ -10,8 +10,9 @@ import { SpecificModule } from '@/components/steps/SpecificModule';
 import { Resultado } from '@/components/Resultado';
 import { usePromptGenerator } from '@/hooks/usePromptGenerator';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Zap, Code2, Layers, Cpu, HelpCircle, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Zap, Code2, Layers, Cpu, HelpCircle, Sparkles, Maximize2, Minimize2 } from 'lucide-react';
 import type { Preset } from '@/types';
+import { useRef, useState } from 'react';
 
 const steps = [
   { id: 1, title: 'Tipo' },
@@ -35,22 +36,51 @@ function App() {
     generatePrompt,
     resetForm,
     exportConfig,
+    exportTOON,
+    exportXML,
     importConfig,
     clearSavedData,
   } = usePromptGenerator();
 
-  const handleNext = () => {
-    if (currentStep < steps.length) {
-      if (!canProceed()) return;
-      setCurrentStep(prev => prev + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const generatorRef = useRef<HTMLDivElement>(null);
+
+  const scrollToGenerator = () => {
+    generatorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const getStepValidity = (stepId: number) => {
+    switch (stepId) {
+      case 1:
+        return !!formData.appType && !!formData.stack;
+      case 2:
+        return !!formData.projectName?.trim();
+      default:
+        return true;
     }
+  };
+
+  const invalidSteps = steps
+    .filter(step => !getStepValidity(step.id))
+    .map(step => step.id);
+
+  const handleStepClick = (stepId: number) => {
+    setCurrentStep(stepId);
+    scrollToGenerator();
   };
 
   const handlePrev = () => {
     if (currentStep > 1) {
       setCurrentStep(prev => prev - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollToGenerator();
+    }
+  };
+
+  const handleNext = () => {
+    if (currentStep < steps.length) {
+      if (!getStepValidity(currentStep)) return;
+      setCurrentStep(prev => prev + 1);
+      scrollToGenerator();
     }
   };
 
@@ -58,18 +88,7 @@ function App() {
     loadPreset(preset);
     if (currentStep === 1) {
       setCurrentStep(2);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  const canProceed = () => {
-    switch (currentStep) {
-      case 1:
-        return !!formData.appType && !!formData.stack;
-      case 2:
-        return !!formData.projectName.trim();
-      default:
-        return true;
+      scrollToGenerator();
     }
   };
 
@@ -130,27 +149,40 @@ function App() {
     }
   };
 
+  const handleGenerate = () => {
+    if (invalidSteps.length > 0) {
+      alert("Por favor, preencha todos os campos obrigatórios marcados em vermelho antes de gerar o prompt.");
+      return;
+    }
+    generatePrompt();
+    setIsFullScreen(false); // Reset focus mode on result
+    setCurrentStep(7); // Move to the result step
+  };
+
+  const handleReset = () => {
+    setIsFullScreen(false);
+    resetForm();
+  };
+
   if (showResult) {
     return (
       <div className="min-h-screen bg-background selection:bg-primary/20 selection:text-primary">
-        <Header onExport={exportConfig} onImport={importConfig} onClear={clearSavedData} />
+        <Header onExport={exportConfig} onImport={importConfig} onClear={handleReset} />
         <main className="container mx-auto px-4 py-12">
           <div className="max-w-4xl mx-auto animate-in fade-in zoom-in duration-500">
             <Resultado
               prompt={generatedPrompt}
-              onReset={resetForm}
+              onReset={handleReset}
               onExport={exportConfig}
+              onExportToon={exportTOON}
+              onExportXml={exportXML}
+              formData={formData}
             />
           </div>
         </main>
       </div>
     );
   }
-
-  const handleGenerate = () => {
-    generatePrompt();
-    setCurrentStep(7); // Move to the result step
-  };
 
   return (
     <div className="min-h-screen bg-background selection:bg-primary/20 flex flex-col items-center overflow-x-hidden">
@@ -226,12 +258,28 @@ function App() {
           </section>
 
           {/* Form Area */}
-          <section id="generator" aria-label="Gerador de Prompt" className="relative group mx-auto w-full max-w-5xl">
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-purple-500/20 to-indigo-500/20 rounded-[3rem] blur-2xl opacity-50 group-hover:opacity-100 transition duration-1000" />
+          <section id="generator" ref={generatorRef} aria-label="Gerador de Prompt" className={`relative transition-all duration-500 mx-auto w-full scroll-mt-20 ${isFullScreen ? 'fixed inset-0 z-[100] bg-background p-4 sm:p-8 overflow-y-auto max-w-none' : 'max-w-5xl group'}`}>
+            <div className={`absolute -inset-1 bg-gradient-to-r from-primary/20 via-purple-500/20 to-indigo-500/20 rounded-[3rem] blur-2xl opacity-50 transition duration-1000 ${isFullScreen ? 'hidden' : 'group-hover:opacity-100'}`} />
 
-            <div className="relative glass-card rounded-[2.5rem] overflow-hidden border-primary/10">
-              <div className="p-1 sm:p-2 bg-muted/30 border-b border-primary/5">
-                <StepIndicator steps={steps} currentStep={currentStep} />
+            <div className={`relative glass-card rounded-[2.5rem] overflow-hidden border-primary/10 flex flex-col ${isFullScreen ? 'min-h-full rounded-none sm:rounded-[2.5rem]' : ''}`}>
+              <div className="p-1 sm:p-2 bg-muted/30 border-b border-primary/5 flex items-center justify-between pr-4 sm:pr-6">
+                <div className="flex-1">
+                  <StepIndicator
+                    steps={steps}
+                    currentStep={currentStep}
+                    onStepClick={handleStepClick}
+                    invalidSteps={invalidSteps}
+                  />
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsFullScreen(!isFullScreen)}
+                  className="rounded-xl hover:bg-primary/5 text-muted-foreground hover:text-primary transition-colors ml-2"
+                  title={isFullScreen ? "Sair da Tela Cheia" : "Modo Concentração (Tela Cheia)"}
+                >
+                  {isFullScreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+                </Button>
               </div>
 
               <div className="p-6 sm:p-10 lg:p-12 min-h-[500px]">
@@ -251,9 +299,17 @@ function App() {
                     {renderStep()}
                   </div>
                 ) : (
-                  <Resultado prompt={generatedPrompt} onReset={resetForm} onExport={exportConfig} />
+                  <Resultado
+                    prompt={generatedPrompt}
+                    onReset={handleReset}
+                    onExport={exportConfig}
+                    onExportToon={exportTOON}
+                    onExportXml={exportXML}
+                    formData={formData}
+                  />
                 )}
               </div>
+
 
               {currentStep < 7 && (
                 <div className="p-6 sm:p-8 bg-muted/30 border-t border-primary/5 flex items-center justify-between">
@@ -285,7 +341,7 @@ function App() {
                     <Button
                       onClick={handleNext}
                       className="h-12 px-8 rounded-xl bg-primary hover:scale-105 transition-transform gap-2 font-bold shadow-lg shadow-primary/40 text-white border-none"
-                      disabled={!canProceed()}
+                      disabled={!getStepValidity(currentStep)}
                     >
                       Continuar
                       <ChevronRight className="w-5 h-5" />
