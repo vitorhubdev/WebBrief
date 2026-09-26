@@ -103,11 +103,11 @@ export function SecurityLegal({ formData, updateField, toggleArrayField }: Secur
           </div>
 
           {formData.regulatedSector !== 'nao' && (
-            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg animate-in fade-in">
-              <p className="text-sm text-amber-800">
-                <strong>Atenção:</strong> Setores regulados podem exigir conformidades específicas 
-                (HIPAA para saúde, PCI-DSS para finanças, etc.). O prompt incluirá avisos sobre 
-                consultoria especializada.
+            <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-lg animate-in fade-in">
+              <p className="text-sm text-amber-800 dark:text-amber-200">
+                <strong>Atenção:</strong> o prompt vai incluir um bloco de conformidade
+                (LGPD, HIPAA/PCI conforme o setor) e o aviso de que isso não substitui
+                consultoria jurídica.
               </p>
             </div>
           )}

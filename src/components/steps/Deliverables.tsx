@@ -3,7 +3,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card } from '@/components/ui/card';
 import { Package, Code, TestTube, Shield } from 'lucide-react';
-import type { FormData } from '@/types';
+import type { FormData, WorkflowMode } from '@/types';
+import { workflowModeOptions } from '@/types';
 
 interface DeliverablesProps {
   formData: FormData;
@@ -22,6 +23,30 @@ const deliverableOptions = [
 export function Deliverables({ formData, updateField, toggleArrayField }: DeliverablesProps) {
   return (
     <div className="space-y-8">
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Package className="w-5 h-5 text-primary" />
+          <h3 className="text-lg font-semibold">Como o agente vai trabalhar?</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {workflowModeOptions.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => updateField('workflowMode', option.value as WorkflowMode)}
+              className={`p-5 rounded-2xl border-2 text-left transition-all ${
+                formData.workflowMode === option.value
+                  ? 'border-primary bg-primary/[0.04]'
+                  : 'border-muted hover:border-primary/30'
+              }`}
+            >
+              <p className="font-bold">{option.label}</p>
+              <p className="text-sm text-muted-foreground mt-1">{option.desc}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* O que entregar */}
       <div className="space-y-4">
         <div className="flex items-center gap-2">

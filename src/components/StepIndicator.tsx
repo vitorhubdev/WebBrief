@@ -1,4 +1,5 @@
 import { Check, AlertCircle } from 'lucide-react';
+import { useI18n } from '@/i18n/context';
 
 interface Step {
   id: number;
@@ -13,6 +14,8 @@ interface StepIndicatorProps {
 }
 
 export function StepIndicator({ steps, currentStep, onStepClick, invalidSteps = [] }: StepIndicatorProps) {
+  const { t } = useI18n();
+
   return (
     <div className="flex items-center justify-center py-4 overflow-x-auto no-scrollbar">
       <div className="flex items-center gap-3">
@@ -27,24 +30,30 @@ export function StepIndicator({ steps, currentStep, onStepClick, invalidSteps = 
               <button
                 type="button"
                 onClick={() => onStepClick?.(step.id)}
-                className="flex flex-col items-center group cursor-pointer border-none bg-transparent outline-none focus:ring-0"
+                aria-current={isActive ? 'step' : undefined}
+                aria-label={t('steps.stepAria', {
+                  id: step.id,
+                  title: step.title,
+                  invalid: isInvalid ? t('steps.incomplete') : '',
+                })}
+                className="flex flex-col items-center group cursor-pointer border-none bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg"
               >
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-500 transform-gpu ${isActive
+                  className={`w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-medium ${isActive
                     ? isInvalid
-                      ? 'bg-destructive text-destructive-foreground scale-110 shadow-lg shadow-destructive/30 ring-4 ring-destructive/10'
-                      : 'bg-primary text-primary-foreground scale-110 shadow-lg shadow-primary/30 ring-4 ring-primary/10'
+                      ? 'bg-destructive text-destructive-foreground'
+                      : 'bg-primary text-primary-foreground'
                     : isInvalid
-                      ? 'bg-destructive/20 text-destructive border border-destructive/20 animate-pulse'
+                      ? 'bg-destructive/15 text-destructive'
                       : isCompleted
-                        ? 'bg-primary/20 text-primary'
-                        : 'bg-muted/50 text-muted-foreground border border-primary/5'
+                        ? 'bg-foreground text-background'
+                        : 'bg-background text-muted-foreground'
                     }`}
                 >
                   {isInvalid ? <AlertCircle className="w-4 h-4" /> : isCompleted ? <Check className="w-4 h-4" /> : step.id}
                 </div>
                 <span
-                  className={`mt-2 text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ${isActive ? (isInvalid ? 'text-destructive' : 'text-primary') + ' scale-105 opacity-100' : isInvalid ? 'text-destructive opacity-100' : 'text-muted-foreground opacity-50'
+                  className={`mt-1.5 text-[12px] font-medium ${isActive ? (isInvalid ? 'text-destructive' : 'text-foreground') : isInvalid ? 'text-destructive' : 'text-muted-foreground'
                     }`}
                 >
                   {step.title}

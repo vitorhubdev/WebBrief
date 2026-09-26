@@ -1,4 +1,4 @@
-# Logs
+﻿# Logs
 logs
 *.log
 npm-debug.log*
@@ -7,18 +7,74 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies & build
 node_modules
 dist
 dist-ssr
 *.local
+*.tsbuildinfo
+.cache
+.turbo
+coverage
 
-# Editor directories and files
+# Env / secrets / keys (never commit)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.keystore
+id_rsa*
+id_ed25519*
+*.secret
+credentials.json
+service-account*.json
+
+# Auth / deploy local state
+.npmrc
+.netrc
+.wrangler/
+.dev.vars
+.vercel
+.cloudflare/
+
+# Editor / AI tooling (may embed paths or secrets)
+.cursor/
+.idea
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# OS junk
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# Kimi inspect / plugin local junk
+.kimi/
+**/*kimi*inspect*
+*.inspect.json
+*.inspect.*
+
+# Browser dumps / session exports
+localStorage*.json
+*localStorage*
+cookies*.txt
+*.har
+*.session
+*.cookie
+
+# Misc private
+*.bak
+*.dump
+*.sqlite
+*.db

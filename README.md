@@ -1,73 +1,61 @@
-# React + TypeScript + Vite
+# WebBrief
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**WebBrief** is an open-source bilingual (English + Portuguese) toolkit that turns a project idea into a **structured web/project brief** and a downloadable **agent kit**: `AGENTS.md`, `SKILL.md` files, harness adapters (including optional Cursor export), specs, and token-economy notes.
 
-Currently, two official plugins are available:
+Built by [Vitor (vitorhubdev)](https://github.com/vitorhubdev) · [vitorhub.com](https://vitorhub.com)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## What you get
 
-## React Compiler
+- A guided form (template → story → harness & options)
+- A zip with kickoff prompt, contract files, use-case skills, and target-specific shims
+- Three workflow rhythms: **rapid**, **structured**, and **spec-driven**
+- Optional Ralph / Gauntlet loop configuration
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+WebBrief is a professional OSS utility—not a toy demo. Generated kits are meant to live in your repo so agents read files from disk instead of bloating chat context.
 
-## Expanding the ESLint configuration
+## Quick start
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open the local URL from Vite. Use the **PT / EN** toggle in the header; preference is stored in `localStorage`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build   # production build (GitHub Pages–ready)
+npm run lint
 ```
+
+## GitHub Pages
+
+The site deploys automatically when changes land on `main`. Enable **Settings → Pages → Source: GitHub Actions**, then see [DEPLOY.md](./DEPLOY.md) for the repo rename note and URL details.
+
+Live demo (after rename & deploy): `https://vitorhubdev.github.io/WebBrief/`
+
+## License
+
+MIT
+
+---
+
+## WebBrief (Português)
+
+**WebBrief** é um kit open source bilíngue (português + inglês) que transforma a ideia do projeto em um **brief estruturado** e um **kit para agentes**: `AGENTS.md`, arquivos `SKILL.md`, adaptadores de harness (export Cursor opcional), specs e notas de economia de tokens.
+
+Autor: [Vitor (vitorhubdev)](https://github.com/vitorhubdev) · [vitorhub.com](https://vitorhub.com)
+
+### Uso rápido
+
+```bash
+npm install
+npm run dev
+```
+
+Alterne **Português / English** no cabeçalho; a preferência fica no `localStorage`.
+
+### GitHub Pages
+
+Deploy automático no push para `main`. Ative **Configurações → Pages → Origem: GitHub Actions**. Detalhes em [DEPLOY.md](./DEPLOY.md).
+
+Licença: MIT

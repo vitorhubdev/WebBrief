@@ -5,8 +5,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card } from '@/components/ui/card';
 import { FileText, Zap } from 'lucide-react';
-import type { FormData } from '@/types';
-import { featureOptions } from '@/types';
+import type { FormData, PromptTarget } from '@/types';
+import { featureOptions, promptTargetOptions } from '@/types';
 
 interface BasicInfoProps {
   formData: FormData;
@@ -36,7 +36,7 @@ export function BasicInfo({ formData, updateField, toggleArrayField }: BasicInfo
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="pitch">Em uma frase, o que faz? (elevator pitch)</Label>
+            <Label htmlFor="pitch">Em uma frase, o que faz? (elevator pitch) *</Label>
             <Textarea
               id="pitch"
               placeholder="Ex: Um gerenciador de tarefas para equipes que sincroniza em tempo real..."
@@ -57,12 +57,43 @@ export function BasicInfo({ formData, updateField, toggleArrayField }: BasicInfo
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="mainAction">Principal ação do usuário</Label>
+            <Label htmlFor="mainAction">Principal ação do usuário *</Label>
             <Input
               id="mainAction"
               placeholder="Ex: Criar e gerenciar tarefas, comprar produtos, visualizar relatórios..."
               value={formData.mainAction}
               onChange={(e) => updateField('mainAction', e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Onde o prompt vai ser usado?</Label>
+            <div className="flex flex-wrap gap-2">
+              {promptTargetOptions.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => updateField('promptTarget', option.value as PromptTarget)}
+                  className={`px-3 py-2 rounded-xl text-left text-xs font-semibold transition-all border ${formData.promptTarget === option.value
+                    ? 'bg-primary border-primary text-white'
+                    : 'bg-muted/50 border-primary/10 hover:border-primary/30 text-muted-foreground hover:text-foreground'
+                    }`}
+                >
+                  <span className="block">{option.label}</span>
+                  <span className="block font-normal opacity-70 mt-0.5">{option.desc}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="notes">Observações extras para a IA</Label>
+            <Textarea
+              id="notes"
+              placeholder="Restrições, legado, estilo, o que não fazer..."
+              value={formData.notes}
+              onChange={(e) => updateField('notes', e.target.value)}
+              className="min-h-[80px]"
             />
           </div>
         </div>
