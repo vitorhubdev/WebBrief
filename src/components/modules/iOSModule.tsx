@@ -32,15 +32,16 @@ export function IOSModule({ formData, updateField, toggleArrayField }: IOSModule
       <div className="space-y-3">
         <Label>Versão mínima do iOS</Label>
         <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
-          {['15', '16', '17', '18'].map((version) => (
-            <div
+          {['16', '17', '18', '26'].map((version) => (
+            <button
+              type="button"
               key={version}
               onClick={() => updateField('iosMinVersion', version)}
-              className={`p-3 rounded-lg border cursor-pointer transition-colors text-center ${formData.iosMinVersion === version ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
+              className={`p-3 rounded-lg border transition-colors text-center ${formData.iosMinVersion === version ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
                 }`}
             >
               <span className="text-sm font-medium">iOS {version}+</span>
-            </div>
+            </button>
           ))}
         </div>
       </div>
@@ -156,6 +157,28 @@ export function IOSModule({ formData, updateField, toggleArrayField }: IOSModule
             onChange={(e) => updateField('iosPushType', e.target.value)}
           />
         )}
+      </div>
+
+      <div className="space-y-3">
+        <Label>Modo offline</Label>
+        <RadioGroup
+          value={formData.iosOffline}
+          onValueChange={(v) => updateField('iosOffline', v as 'nao' | 'cache' | 'sync')}
+          className="grid grid-cols-3 gap-3"
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="nao" id="ios-offline-nao" />
+            <Label htmlFor="ios-offline-nao" className="cursor-pointer text-sm">Não</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="cache" id="ios-offline-cache" />
+            <Label htmlFor="ios-offline-cache" className="cursor-pointer text-sm">Cache</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="sync" id="ios-offline-sync" />
+            <Label htmlFor="ios-offline-sync" className="cursor-pointer text-sm">Sync</Label>
+          </div>
+        </RadioGroup>
       </div>
 
       <div className="space-y-3">

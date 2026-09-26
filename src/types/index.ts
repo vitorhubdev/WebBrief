@@ -2,21 +2,47 @@
 export type AppType = 'website' | 'android' | 'ios' | 'cli' | 'gui' | 'docker' | 'api';
 
 // Stacks/Linguagens suportadas
-export type Stack = 'go' | 'rust' | 'python' | 'typescript' | 'cpp' | 'csharp' | 'kotlin' | 'swift' | 'java' | 'dart';
+export type Stack = 'go' | 'rust' | 'python' | 'typescript' | 'javascript' | 'php' | 'ruby' | 'cpp' | 'csharp' | 'kotlin' | 'swift' | 'java' | 'dart';
+
+export type PromptTarget =
+  | 'generic'
+  | 'cursor'
+  | 'windsurf'
+  | 'claude-code'
+  | 'codex'
+  | 'gemini'
+  | 'antigravity'
+  | 'pi'
+  | 'omp'
+  | 'opencode'
+  | 'kilo'
+  | 'cline'
+  | 'crush'
+  | 'dsh';
+
+export type WorkflowMode = 'vibe' | 'structured' | 'spec';
 
 // Interface principal do formulário
 export interface FormData {
   // === ETAPA 1: TIPO E STACK ===
   appType: AppType | '';
   stack: Stack | '';
+  patternId: string;
+  framework: string;
 
-  // === ETAPA 2: IDENTIDADE E OBJETIVO ===
+  // === ETAPA 2: IDENTIDADE E FUNCIONALIDADES ===
   projectName: string;
   pitch: string;
   targetAudience: string;
   mainAction: string;
-
-  // === ETAPA 3: FUNCIONALIDADES ===
+  promptTarget: PromptTarget;
+  /** Camada opcional TypeSafe Jev. Não substitui o harness. */
+  useJev: boolean;
+  /** off = sem loop; ralph = mesmo pedido até a checagem; gauntlet = crítico cego. */
+  loopMode: 'off' | 'ralph' | 'gauntlet';
+  /** Referência nomeada para o Gauntlet. Vazio = o agente propõe barras e para. */
+  qualityBar: string;
+  workflowMode: WorkflowMode;
   features: string[];
   hasAuth: 'sim' | 'nao';
   authType: string;
@@ -24,20 +50,20 @@ export interface FormData {
   storageType: string;
   integrations: string;
 
-  // === ETAPA 4: REQUISITOS TÉCNICOS ===
+  // === ETAPA 3: REQUISITOS TÉCNICOS ===
   offlineSupport: 'nao' | 'parcial' | 'total';
   performanceTarget: string;
   accessibility: 'basica' | 'avancada';
   languages: 'ptbr' | 'multi';
   theme: 'claro' | 'escuro' | 'ambos';
 
-  // === ETAPA 5: SEGURANÇA E LEGAL ===
+  // === ETAPA 4: SEGURANÇA E LEGAL ===
   collectsData: 'sim' | 'nao';
   collectedDataTypes: string[];
   regulatedSector: 'nao' | 'saude' | 'financas' | 'educacao' | 'outro';
   licensesSource: string;
 
-  // === ETAPA 6: ENTREGÁVEIS ===
+  // === ETAPA 5: ENTREGÁVEIS ===
   deliverables: string[];
   scope: 'mvp' | 'completo';
   codeQuality: 'simples' | 'clean' | 'patterns' | 'arquitetura';
@@ -145,6 +171,13 @@ export const initialFormData: FormData = {
   pitch: '',
   targetAudience: '',
   mainAction: '',
+  promptTarget: 'generic',
+  useJev: false,
+  loopMode: 'off',
+  qualityBar: '',
+  workflowMode: 'structured',
+  patternId: '',
+  framework: '',
   features: [],
   hasAuth: 'nao',
   authType: '',
@@ -612,7 +645,7 @@ export const presets: Preset[] = [
     appType: 'android',
     stack: 'dart',
     data: {
-      androidUI: 'compose', // Representa a natureza declarativa do Flutter
+      androidUI: 'flutter',
       androidMinVersion: '21',
       androidOrientation: 'ambos',
       androidOffline: 'sync',
@@ -663,6 +696,35 @@ export const presets: Preset[] = [
 ];
 
 // Opções para selects
+export const workflowModeOptions: { value: WorkflowMode; label: string; desc: string }[] = [
+  { value: 'vibe', label: 'Vibe rápido', desc: 'Um chat, MVP agora. Ainda lê AGENTS.md e verifica no fim.' },
+  { value: 'structured', label: 'Vibe estruturado', desc: 'Uma tarefa, um contexto. Padrão para não estourar tokens.' },
+  { value: 'spec', label: 'Spec-driven', desc: 'Plano antes do código. Constitution, PLAN e tarefas.' },
+];
+
+export const promptTargetOptions: { value: PromptTarget; label: string; desc: string; group: string }[] = [
+  { value: 'generic', group: 'Sem ferramenta fixa', label: 'Qualquer agente', desc: 'Chat ou pasta. O contrato continua sendo AGENTS.md.' },
+  { value: 'cursor', group: 'IDE', label: 'Cursor', desc: 'Regra no workspace. Skills em .cursor/skills.' },
+  { value: 'windsurf', group: 'IDE', label: 'Windsurf', desc: 'Cascade. Adaptador .windsurfrules só neste destino.' },
+  { value: 'claude-code', group: 'Agente de um fornecedor', label: 'Claude Code', desc: 'CLAUDE.md aponta para AGENTS.md. Subagentes com contexto separado.' },
+  { value: 'codex', group: 'Agente de um fornecedor', label: 'Codex', desc: 'AGENTS.md curto, sandbox, worktree e uma tarefa por lote.' },
+  { value: 'gemini', group: 'Agente de um fornecedor', label: 'Gemini CLI', desc: 'GEMINI.md só aponta para o contrato.' },
+  { value: 'antigravity', group: 'Agente de um fornecedor', label: 'Antigravity', desc: '/boost abre vários agentes. GEMINI.md só aponta para o contrato.' },
+  { value: 'pi', group: 'Harness aberto', label: 'Pi', desc: 'Núcleo mínimo. Skills sob demanda em .pi/skills e .agents/skills.' },
+  { value: 'omp', group: 'Harness aberto', label: 'Oh My Pi', desc: 'Pi completo: LSP, MCP, subagentes. Reaproveita configs de outros agentes.' },
+  { value: 'opencode', group: 'Harness aberto', label: 'OpenCode', desc: 'Terminal multi-modelo. Override curto, sem duplicar o contrato.' },
+  { value: 'kilo', group: 'Harness aberto', label: 'Kilo Code', desc: 'Subagentes em background. O principal recebe o resumo.' },
+  { value: 'cline', group: 'Harness aberto', label: 'Cline', desc: 'Agente maduro. Uma tarefa por sessão, sem repetir o mesmo erro no contexto.' },
+  { value: 'crush', group: 'Harness aberto', label: 'Crush', desc: 'TUI enxuta em Go. Não ligue MCP que a tarefa não usa.' },
+  { value: 'dsh', group: 'Harness aberto', label: 'DeepSeek Harness', desc: 'Sessão em log: retome ou faça fork em vez de reenviar o histórico.' },
+];
+
+const KNOWN_TARGETS = new Set<string>(promptTargetOptions.map((option) => option.value));
+
+export function normalizePromptTarget(value: unknown): PromptTarget {
+  return typeof value === 'string' && KNOWN_TARGETS.has(value) ? (value as PromptTarget) : 'generic';
+}
+
 export const appTypeOptions = [
   { value: 'website', label: 'Website', icon: 'Globe', desc: 'Sites, landing pages, dashboards' },
   { value: 'android', label: 'Android', icon: 'Smartphone', desc: 'Apps nativos ou cross-platform' },
@@ -675,26 +737,225 @@ export const appTypeOptions = [
 
 // Mapeamento de compatibilidade: quais stacks funcionam com cada tipo de app
 export const stackCompatibility: Record<AppType, Stack[]> = {
-  website: ['typescript', 'python', 'go'],
-  android: ['kotlin', 'java', 'csharp', 'dart', 'typescript'], // C# (MAUI), Dart (Flutter), TS (React Native)
-  ios: ['swift', 'csharp', 'dart', 'typescript'], // C# (MAUI), Dart (Flutter), TS (React Native)
-  cli: ['go', 'rust', 'python', 'typescript', 'cpp', 'csharp', 'dart'],
-  gui: ['csharp', 'cpp', 'typescript', 'rust', 'python', 'kotlin', 'swift', 'java', 'dart'], // C# (MAUI/Avalonia), Dart (Flutter)
-  docker: ['go', 'rust', 'python', 'typescript', 'java', 'csharp'],
-  api: ['go', 'rust', 'python', 'typescript', 'java', 'csharp'],
+  website: ['typescript', 'javascript', 'php', 'ruby', 'python', 'go'],
+  android: ['dart', 'kotlin', 'typescript', 'java', 'csharp'],
+  ios: ['dart', 'swift', 'typescript', 'csharp'],
+  cli: ['python', 'typescript', 'javascript', 'go', 'rust', 'php', 'ruby', 'cpp', 'csharp', 'dart'],
+  gui: ['typescript', 'javascript', 'csharp', 'dart', 'python', 'rust', 'cpp', 'kotlin', 'swift', 'java'],
+  docker: ['typescript', 'javascript', 'python', 'go', 'php', 'ruby', 'rust', 'java', 'csharp'],
+  api: ['python', 'typescript', 'javascript', 'php', 'ruby', 'go', 'rust', 'java', 'csharp'],
+};
+
+export const recommendedStack: Record<AppType, Stack> = {
+  website: 'typescript',
+  android: 'dart',
+  ios: 'dart',
+  cli: 'python',
+  gui: 'typescript',
+  docker: 'python',
+  api: 'python',
+};
+
+export const recommendedFramework: Partial<Record<Stack, string>> = {
+  typescript: 'Next.js',
+  javascript: 'Vite + React',
+  python: 'FastAPI',
+  php: 'Laravel',
+  ruby: 'Rails',
+  go: 'Fiber',
+  dart: 'Flutter',
+  csharp: 'ASP.NET / MAUI',
 };
 
 export const stackOptions = [
-  { value: 'go', label: 'Go', desc: 'Sistemas rápidos, APIs e Microserviços' },
-  { value: 'rust', label: 'Rust', desc: 'Segurança de memória e performance extrema' },
-  { value: 'python', label: 'Python', desc: 'IA, Automação e Prototipagem rápida' },
-  { value: 'typescript', label: 'TypeScript', desc: 'Ecossistema JS/Node - Web e Desktop' },
-  { value: 'cpp', label: 'C++', desc: 'Software de baixo nível e alto desempenho' },
-  { value: 'csharp', label: 'C#', desc: 'MAUI, Unity e Ecossistema .NET' },
-  { value: 'kotlin', label: 'Kotlin', desc: 'Android Moderno e Multiplatform (KMP)' },
-  { value: 'swift', label: 'Swift', desc: 'Ecossistema Apple e SwiftUI' },
-  { value: 'java', label: 'Java', desc: 'Sistemas corporativos e legados' },
-  { value: 'dart', label: 'Dart', desc: 'Performance nativa com Flutter' },
+  { value: 'typescript', label: 'TypeScript', desc: 'O mais comum na web hoje (Next.js, React)' },
+  { value: 'javascript', label: 'JavaScript', desc: 'Simples, Vite, Node — bom para começar' },
+  { value: 'python', label: 'Python', desc: 'IA, APIs e automações com pouca fricção' },
+  { value: 'php', label: 'PHP', desc: 'Sites e Laravel — muito hospedagem barata' },
+  { value: 'ruby', label: 'Ruby', desc: 'Rails: CRUD e SaaS rápido' },
+  { value: 'dart', label: 'Dart (Flutter)', desc: 'Um código para Android e iPhone' },
+  { value: 'go', label: 'Go', desc: 'APIs e CLIs rápidas' },
+  { value: 'csharp', label: 'C#', desc: '.NET, Windows e apps multiplataforma' },
+  { value: 'rust', label: 'Rust', desc: 'Performance e desktop (Tauri)' },
+  { value: 'kotlin', label: 'Kotlin', desc: 'Android nativo moderno' },
+  { value: 'swift', label: 'Swift', desc: 'iPhone nativo' },
+  { value: 'java', label: 'Java', desc: 'Sistemas corporativos' },
+  { value: 'cpp', label: 'C++', desc: 'Baixo nível e jogos' },
+];
+
+export interface ProductPattern {
+  id: string;
+  name: string;
+  blurb: string;
+  icon: string;
+  appType: AppType;
+  stack: Stack;
+  framework: string;
+  data: Partial<FormData>;
+}
+
+export const productPatterns: ProductPattern[] = [
+  {
+    id: 'landing',
+    name: 'Página para captar clientes',
+    blurb: 'Uma página, botão de WhatsApp ou formulário. O começo mais fácil.',
+    icon: 'Globe',
+    appType: 'website',
+    stack: 'typescript',
+    framework: 'Next.js',
+    data: {
+      websiteType: 'landing-page',
+      websitePages: ['Home'],
+      websiteForms: 'lead',
+      ctaType: 'whatsapp',
+      needsSEO: 'sim',
+      scope: 'mvp',
+    },
+  },
+  {
+    id: 'portfolio',
+    name: 'Portfólio ou site pessoal',
+    blurb: 'Mostre quem você é e seus trabalhos.',
+    icon: 'User',
+    appType: 'website',
+    stack: 'typescript',
+    framework: 'Next.js',
+    data: {
+      websiteType: 'portfolio',
+      websitePages: ['Home', 'Sobre', 'Projetos', 'Contato'],
+      designStyle: 'minimalista',
+    },
+  },
+  {
+    id: 'loja',
+    name: 'Loja simples',
+    blurb: 'Catálogo, carrinho e checkout (Stripe/Pix).',
+    icon: 'Globe',
+    appType: 'website',
+    stack: 'typescript',
+    framework: 'Next.js',
+    data: {
+      websiteType: 'ecommerce',
+      websitePages: ['Home', 'Checkout', 'Contato'],
+      features: ['pagamentos'],
+      storesData: 'sim',
+      storageType: 'PostgreSQL',
+    },
+  },
+  {
+    id: 'saas',
+    name: 'Sistema com login (SaaS)',
+    blurb: 'Painel, contas de usuário e dados salvos.',
+    icon: 'LayoutDashboard',
+    appType: 'website',
+    stack: 'typescript',
+    framework: 'Next.js',
+    data: {
+      websiteType: 'saas',
+      websitePages: ['Login', 'Dashboard', 'Perfil', 'Admin'],
+      hasAuth: 'sim',
+      authType: 'Email/Senha',
+      storesData: 'sim',
+      storageType: 'PostgreSQL',
+      features: ['auth'],
+      scope: 'mvp',
+    },
+  },
+  {
+    id: 'blog',
+    name: 'Blog ou conteúdo',
+    blurb: 'Artigos, SEO e newsletter.',
+    icon: 'Globe',
+    appType: 'website',
+    stack: 'javascript',
+    framework: 'Astro',
+    data: {
+      websiteType: 'blog',
+      websitePages: ['Home', 'Blog', 'Contato'],
+      contentType: 'editavel',
+      needsSEO: 'sim',
+    },
+  },
+  {
+    id: 'chat-ia',
+    name: 'Chat com IA',
+    blurb: 'Caixa de pergunta + resposta (OpenAI ou Ollama).',
+    icon: 'Cpu',
+    appType: 'website',
+    stack: 'typescript',
+    framework: 'Next.js',
+    data: {
+      websiteType: 'saas',
+      features: ['chat', 'api-externa'],
+      integrations: 'OpenAI',
+      hasAuth: 'sim',
+      authType: 'Email/Senha',
+    },
+  },
+  {
+    id: 'app-flutter',
+    name: 'App de celular (Android e iPhone)',
+    blurb: 'Um código Flutter para as duas lojas.',
+    icon: 'Smartphone',
+    appType: 'android',
+    stack: 'dart',
+    framework: 'Flutter',
+    data: {
+      androidUI: 'flutter',
+      androidMinVersion: '21',
+      iosUI: 'flutter',
+      hasAuth: 'sim',
+      storesData: 'sim',
+      storageType: 'sqlite',
+    },
+  },
+  {
+    id: 'api',
+    name: 'API / backend',
+    blurb: 'O servidor que o app ou o site vai chamar.',
+    icon: 'Server',
+    appType: 'api',
+    stack: 'python',
+    framework: 'FastAPI',
+    data: {
+      apiType: 'rest',
+      apiFramework: 'FastAPI',
+      apiAuth: 'jwt',
+      apiDocs: 'sim',
+      hasAuth: 'sim',
+      storesData: 'sim',
+      storageType: 'postgres',
+    },
+  },
+  {
+    id: 'automacao',
+    name: 'Automação no computador',
+    blurb: 'Script ou CLI que faz uma tarefa repetida.',
+    icon: 'Terminal',
+    appType: 'cli',
+    stack: 'python',
+    framework: 'Typer',
+    data: {
+      cliInteractive: 'sim',
+      cliOutput: 'texto',
+      features: ['api-externa'],
+    },
+  },
+  {
+    id: 'desktop',
+    name: 'Programa de computador',
+    blurb: 'Janela no Windows/Mac — tipo um app instalável.',
+    icon: 'Monitor',
+    appType: 'gui',
+    stack: 'typescript',
+    framework: 'Tauri',
+    data: {
+      guiFramework: 'tauri',
+      guiPersistence: 'config',
+      storesData: 'sim',
+      storageType: 'sqlite',
+    },
+  },
 ];
 
 export const featureOptions = [
@@ -708,6 +969,9 @@ export const featureOptions = [
   { value: 'offline', label: 'Modo Offline / PWA' },
   { value: 'notificacoes', label: 'Notificações Push' },
   { value: 'geolocalizacao', label: 'GPS e Mapas' },
+  { value: 'ia', label: 'Inteligência artificial (chat/visão)' },
+  { value: 'whatsapp', label: 'WhatsApp / mensagem' },
+  { value: 'agenda', label: 'Agenda e horários' },
 ];
 
 export const websiteTypeOptions = [

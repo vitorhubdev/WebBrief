@@ -50,10 +50,11 @@ export function TypeSelection({
             const Icon = iconMap[option.icon] || Globe;
             const isSelected = selectedType === option.value;
             return (
-              <div
+              <button
+                type="button"
                 key={option.value}
                 onClick={() => onSelectType(option.value as AppType)}
-                className={`group p-5 rounded-2xl cursor-pointer transition-all duration-300 border-2 ${isSelected
+                className={`group p-5 rounded-2xl text-left transition-all duration-300 border-2 ${isSelected
                   ? 'border-primary bg-primary/[0.03] shadow-lg shadow-primary/10'
                   : 'border-muted bg-muted/20 hover:border-primary/30 hover:bg-muted/30'
                   }`}
@@ -67,7 +68,7 @@ export function TypeSelection({
                     <p className="text-xs text-muted-foreground leading-relaxed">{option.desc}</p>
                   </div>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
@@ -133,10 +134,11 @@ export function TypeSelection({
             {filteredPresets.map((preset) => {
               const Icon = iconMap[preset.icon] || Sparkles;
               return (
-                <div
+                <button
+                  type="button"
                   key={preset.id}
                   onClick={() => onLoadPreset(preset)}
-                  className="group p-6 rounded-3xl cursor-pointer transition-all duration-300 glass hover:scale-[1.02] hover:shadow-2xl hover:border-primary/40 border-2 border-transparent relative overflow-hidden"
+                  className="group p-6 rounded-3xl text-left transition-all duration-300 glass hover:scale-[1.02] hover:shadow-2xl hover:border-primary/40 border-2 border-transparent relative overflow-hidden"
                 >
                   <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
                     <Icon className="w-24 h-24 -mr-8 -mt-8" />
@@ -155,7 +157,7 @@ export function TypeSelection({
                       </div>
                     </div>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
