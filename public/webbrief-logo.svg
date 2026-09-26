@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 320" role="img" aria-labelledby="title desc">
+<title id="title">WebBrief</title>
+<desc id="desc">WebBrief logo with geometric WB monogram and wordmark.</desc>
+<g>
+  <path fill="#0A192F" d="M26 52H76L112 202L146 94H186L220 202L256 52H306L248 270H202L166 164L130 270H84Z"/>
+  <path fill="#006FE6" fill-rule="evenodd" d="M208 52H252C304 52 328 77 328 113C328 139 314 156 292 164C317 172 332 192 332 220C332 253 307 270 252 270H208ZM250 88H268C285 88 294 97 294 112C294 127 285 136 268 136H250ZM250 185H271C289 185 298 194 298 210C298 226 289 235 271 235H250Z"/>
+  <path fill="#00B8F0" d="M208 52H252L237 75H208Z"/>
+</g>
+<text x="390" y="210" font-family="Inter, SF Pro Display, Helvetica Neue, Arial, sans-serif" font-size="128" font-weight="650" letter-spacing="-6">
+  <tspan fill="#0A192F">Web</tspan><tspan fill="#006FE6">Brief</tspan>
+</text>
+</svg>

@@ -1,3 +1,9 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./public/webbrief-logo-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./public/webbrief-logo.svg">
+  <img alt="WebBrief" src="./public/webbrief-logo.svg" width="560">
+</picture>
+
 # WebBrief
 
 **WebBrief** is an open-source bilingual (English + Portuguese) toolkit that turns a project idea into a **structured web/project brief** and a downloadable **agent kit**: `AGENTS.md`, `SKILL.md` files, harness adapters (including optional Cursor export), specs, and token-economy notes.

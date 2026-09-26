@@ -44,6 +44,12 @@ export function Header({ onExport, onImport, onClear }: HeaderProps) {
     <header role="banner" className="w-full h-12 sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/70">
       <div className="container h-full flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
+          <img
+            src={`${import.meta.env.BASE_URL}${resolvedTheme === 'light' ? 'webbrief-mark.svg' : 'webbrief-mark-dark.svg'}`}
+            alt=""
+            aria-hidden="true"
+            className="w-7 h-7 shrink-0"
+          />
           <h1 className="text-[17px] font-semibold tracking-tight truncate">{t('brand.name')}</h1>
           <span className="hidden sm:inline text-[12px] text-muted-foreground">{t('header.kit')}</span>
         </div>
