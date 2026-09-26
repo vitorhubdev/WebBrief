@@ -2,6 +2,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import type { FormData } from '@/types';
+import { useI18n } from '@/i18n/context';
 
 interface EasyStoryProps {
   formData: FormData;
@@ -9,27 +10,27 @@ interface EasyStoryProps {
 }
 
 export function EasyStory({ formData, updateField }: EasyStoryProps) {
+  const { t } = useI18n();
+
   return (
     <div className="space-y-8">
-      <p className="text-muted-foreground">
-        Escreva como se fosse para um amigo. Quanto mais concreto, melhor o agente acerta.
-      </p>
+      <p className="text-muted-foreground">{t('easyStory.hint')}</p>
 
       <div className="space-y-2">
-        <Label htmlFor="projectName">Nome do projeto *</Label>
+        <Label htmlFor="projectName">{t('easyStory.projectName')}</Label>
         <Input
           id="projectName"
-          placeholder="Ex: Studio Aurora"
+          placeholder={t('easyStory.projectPlaceholder')}
           value={formData.projectName}
           onChange={(e) => updateField('projectName', e.target.value)}
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="pitch">O que isso faz, em uma frase? *</Label>
+        <Label htmlFor="pitch">{t('easyStory.pitch')}</Label>
         <Textarea
           id="pitch"
-          placeholder="Ex: Página para alunas de yoga agendarem aula experimental pelo WhatsApp."
+          placeholder={t('easyStory.pitchPlaceholder')}
           value={formData.pitch}
           onChange={(e) => updateField('pitch', e.target.value)}
           className="min-h-[88px]"
@@ -37,30 +38,30 @@ export function EasyStory({ formData, updateField }: EasyStoryProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="targetAudience">Quem vai usar?</Label>
+        <Label htmlFor="targetAudience">{t('easyStory.audience')}</Label>
         <Input
           id="targetAudience"
-          placeholder="Ex: mulheres 25–45 na minha cidade"
+          placeholder={t('easyStory.audiencePlaceholder')}
           value={formData.targetAudience}
           onChange={(e) => updateField('targetAudience', e.target.value)}
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="mainAction">A ação mais importante *</Label>
+        <Label htmlFor="mainAction">{t('easyStory.mainAction')}</Label>
         <Input
           id="mainAction"
-          placeholder="Ex: clicar em Agendar e abrir o WhatsApp"
+          placeholder={t('easyStory.mainActionPlaceholder')}
           value={formData.mainAction}
           onChange={(e) => updateField('mainAction', e.target.value)}
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="notes">Tem algo que o agente NÃO deve fazer?</Label>
+        <Label htmlFor="notes">{t('easyStory.notes')}</Label>
         <Textarea
           id="notes"
-          placeholder="Ex: sem estoque, sem login, cores calmas, texto em português do Brasil."
+          placeholder={t('easyStory.notesPlaceholder')}
           value={formData.notes}
           onChange={(e) => updateField('notes', e.target.value)}
         />

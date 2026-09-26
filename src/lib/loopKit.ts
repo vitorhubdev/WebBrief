@@ -123,7 +123,7 @@ export function generateLoopSkill(data: FormData): { name: string; label: string
 - Parar numa nota alta ou num número fixo de voltas.
 ${needsBaseline(data) ? '- Publicar métrica sem o preditor constante e o aleatório ao lado.\n' : ''}
 ## Crédito
-Técnica: Matt Shumer (Gauntlet Loop). Este arquivo é o gerador do PromptGen, não uma cópia das skills de RoboNuggets, gauntletx ou duolahypercho.
+Técnica: Matt Shumer (Gauntlet Loop). Este arquivo é o gerador do WebBrief, não uma cópia das skills de RoboNuggets, gauntletx ou duolahypercho.
 `;
 
   return {

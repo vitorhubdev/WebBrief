@@ -10,57 +10,72 @@ import {
 } from '@/lib/promptGenerator';
 import { assembleDownloadPackage } from '@/lib/kitPackage';
 import { buildZipBlob, slugifyName } from '@/lib/kitZip';
-import { generateVibeKit, type KitFile } from '@/lib/vibeKit';
+import { generateAgentKit, type KitFile } from '@/lib/agentKit';
 
-const STORAGE_KEY = 'promptgen-config-v2';
+const STORAGE_KEY = 'webbrief-config-v2';
+const LEGACY_STORAGE_KEYS = ['promptgen-config-v2'];
+
+function normalizeWorkflowMode(value: unknown): FormData['workflowMode'] {
+  if (value === 'vibe') return 'rapid';
+  if (value === 'rapid' || value === 'structured' || value === 'spec') return value;
+  return 'structured';
+}
 
 function mergeFormData(raw: unknown): FormData {
   if (!raw || typeof raw !== 'object') {
     return initialFormData;
   }
-  const merged = { ...initialFormData, ...(raw as Partial<FormData>) };
+  const partial = raw as Partial<FormData> & { workflowMode?: unknown };
+  const merged = { ...initialFormData, ...partial };
   return {
     ...merged,
     promptTarget: normalizePromptTarget(merged.promptTarget),
+    workflowMode: normalizeWorkflowMode(partial.workflowMode),
     useJev: merged.useJev === true,
     loopMode: normalizeLoopMode(merged.loopMode),
     qualityBar: typeof merged.qualityBar === 'string' ? merged.qualityBar : '',
   };
 }
 
-export function usePromptGenerator() {
-  const [formData, setFormData] = useState<FormData>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) {
-      return initialFormData;
-    }
-
+function loadSavedFormData(): FormData {
+  const keys = [STORAGE_KEY, ...LEGACY_STORAGE_KEYS];
+  for (const key of keys) {
+    const saved = localStorage.getItem(key);
+    if (!saved) continue;
     try {
-      return mergeFormData(JSON.parse(saved));
+      const parsed = mergeFormData(JSON.parse(saved));
+      if (key !== STORAGE_KEY) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+        localStorage.removeItem(key);
+      }
+      return parsed;
     } catch (e) {
       console.error('Erro ao carregar configuração:', e);
     }
+  }
+  return initialFormData;
+}
 
-    return initialFormData;
-  });
+export function usePromptGenerator() {
+  const [formData, setFormData] = useState<FormData>(() => loadSavedFormData());
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [showResult, setShowResult] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
 
-  const vibeKit = useMemo(() => generateVibeKit(formData), [formData]);
+  const agentKit = useMemo(() => generateAgentKit(formData), [formData]);
 
   const promptStats = useMemo(() => {
     const preview = generatePromptText(formData);
-    const kitChars = vibeKit.reduce((n, f) => n + f.content.length, 0);
+    const kitChars = agentKit.reduce((n, f) => n + f.content.length, 0);
     return {
       tokens: Math.ceil(preview.length / 4),
       characters: preview.length,
       lines: preview.split('\n').length,
       preview,
-      kitFiles: vibeKit.length,
+      kitFiles: agentKit.length,
       kitTokens: Math.ceil(kitChars / 4),
     };
-  }, [formData, vibeKit]);
+  }, [formData, agentKit]);
 
   useEffect(() => {
     if (formData.projectName || formData.appType) {
@@ -157,7 +172,7 @@ export function usePromptGenerator() {
   const slug = formData.projectName || 'untitled';
 
   const exportConfig = useCallback(() => {
-    downloadBlob(JSON.stringify(formData, null, 2), 'application/json', `promptgen-config-${slug}.json`);
+    downloadBlob(JSON.stringify(formData, null, 2), 'application/json', `webbrief-config-${slug}.json`);
   }, [downloadBlob, formData, slug]);
 
   const exportTOON = useCallback(() => {
@@ -169,9 +184,9 @@ export function usePromptGenerator() {
   }, [downloadBlob, formData, slug]);
 
   const exportAgents = useCallback(() => {
-    const agents = vibeKit.find((f) => f.id === 'agents');
+    const agents = agentKit.find((f) => f.id === 'agents');
     downloadBlob(agents?.content || generateAgentsMd(formData), 'text/markdown', 'AGENTS.md');
-  }, [downloadBlob, formData, vibeKit]);
+  }, [downloadBlob, formData, agentKit]);
 
   const exportKitFile = useCallback(
     (file: KitFile) => {
@@ -244,7 +259,7 @@ export function usePromptGenerator() {
     exportAgents,
     exportKitFile,
     exportKitAll,
-    vibeKit,
+    agentKit,
     importConfig,
     clearSavedData,
     promptStats,

@@ -4,11 +4,16 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 import type { FormData, PromptTarget, WorkflowMode } from '@/types';
-import type { LoopMode } from '@/lib/loopKit';
-import { featureOptions, promptTargetOptions, workflowModeOptions } from '@/types';
 import { SpecificModule } from '@/components/steps/SpecificModule';
-import { tokenTips } from '@/lib/harnessGuide';
 import { listUseCaseSkills } from '@/lib/useCaseSkills';
+import { useI18n } from '@/i18n/context';
+import {
+  getFeatureOptions,
+  getLoopModeOptions,
+  getPromptTargetOptions,
+  getWorkflowModeOptions,
+  tokenTipsFor,
+} from '@/i18n/options';
 
 interface EasyExtrasProps {
   formData: FormData;
@@ -17,17 +22,20 @@ interface EasyExtrasProps {
 }
 
 export function EasyExtras({ formData, updateField, toggleArrayField }: EasyExtrasProps) {
+  const { locale, t } = useI18n();
   const skills = listUseCaseSkills(formData);
+  const promptTargetOptions = getPromptTargetOptions(locale);
   const groups = [...new Set(promptTargetOptions.map((option) => option.group))];
-  const tips = tokenTips(formData);
+  const tips = tokenTipsFor(locale, formData);
+  const loopOptions = getLoopModeOptions(locale);
+  const workflowModeOptions = getWorkflowModeOptions(locale);
+  const featureOptions = getFeatureOptions(locale);
 
   return (
     <div className="space-y-8">
       <div className="rounded-[20px] bg-secondary p-5 space-y-3">
-        <p className="font-semibold text-sm">Skills que vão no zip deste modelo</p>
-        <p className="text-xs text-muted-foreground">
-          Núcleo (anti-slop, copy, verify, debug) + skills do caso. O texto do passo 2 já entra no bloco “Adaptar”.
-        </p>
+        <p className="font-semibold text-sm">{t('easyExtras.skillsTitle')}</p>
+        <p className="text-xs text-muted-foreground">{t('easyExtras.skillsHint')}</p>
         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
           {skills.map((skill) => (
             <li key={skill.id} className="rounded-xl bg-background/70 px-3 py-2 border border-primary/10">
@@ -40,10 +48,8 @@ export function EasyExtras({ formData, updateField, toggleArrayField }: EasyExtr
 
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label>Qual harness você usa?</Label>
-          <p className="text-xs text-muted-foreground">
-            O harness é o programa que lê a pasta e chama o modelo. Se não souber, deixe “Qualquer agente”.
-          </p>
+          <Label>{t('easyExtras.harnessLabel')}</Label>
+          <p className="text-xs text-muted-foreground">{t('easyExtras.harnessHint')}</p>
         </div>
         {groups.map((group) => (
           <div key={group} className="space-y-2">
@@ -72,15 +78,13 @@ export function EasyExtras({ formData, updateField, toggleArrayField }: EasyExtr
       <div className="rounded-[20px] bg-secondary p-5 space-y-3">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-1">
-            <p className="font-semibold text-sm">Jev por cima do harness</p>
-            <p className="text-xs text-muted-foreground">
-              Opcional. Jev não escreve código: escolhe skill, ferramenta e se vale o modelo caro. Quem implementa continua sendo o harness.
-            </p>
+            <p className="font-semibold text-sm">{t('easyExtras.jevTitle')}</p>
+            <p className="text-xs text-muted-foreground">{t('easyExtras.jevHint')}</p>
           </div>
           <Switch
             checked={formData.useJev}
             onCheckedChange={(checked) => updateField('useJev', checked)}
-            aria-label="Usar Jev para decisões"
+            aria-label={t('easyExtras.jevAria')}
           />
         </div>
         <ul className="space-y-1.5 text-sm">
@@ -94,19 +98,11 @@ export function EasyExtras({ formData, updateField, toggleArrayField }: EasyExtr
 
       <div className="space-y-3">
         <div className="space-y-1">
-          <Label>Poucos minutos agora. Horas sem editar o prompt.</Label>
-          <p className="text-xs text-muted-foreground">
-            Você trava o que conta como pronto. O agente repete sozinho. O loop não fica “mais ou menos”: ou a checagem ganha, ou você manda parar.
-          </p>
+          <Label>{t('easyExtras.loopIntroTitle')}</Label>
+          <p className="text-xs text-muted-foreground">{t('easyExtras.loopIntroBody')}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {(
-            [
-              { value: 'off', label: 'Sem loop', desc: 'Você conduz cada passo. Mais barato.' },
-              { value: 'ralph', label: 'Ralph loop', desc: 'O mesmo pedido, contexto novo, até o teste passar.' },
-              { value: 'gauntlet', label: 'Gauntlet loop', desc: 'Builder e crítico isolados. Comparação cega com uma barra.' },
-            ] as { value: LoopMode; label: string; desc: string }[]
-          ).map((option) => (
+          {loopOptions.map((option) => (
             <button
               key={option.value}
               type="button"
@@ -122,22 +118,20 @@ export function EasyExtras({ formData, updateField, toggleArrayField }: EasyExtr
         </div>
         {formData.loopMode === 'gauntlet' && (
           <div className="space-y-2">
-            <Label htmlFor="qualityBar">Barra de qualidade</Label>
+            <Label htmlFor="qualityBar">{t('easyExtras.qualityBar')}</Label>
             <Input
               id="qualityBar"
-              placeholder="Ex: a página de preços da Linear, ou a CLI jq"
+              placeholder={t('easyExtras.qualityPlaceholder')}
               value={formData.qualityBar}
               onChange={(e) => updateField('qualityBar', e.target.value)}
             />
-            <p className="text-xs text-muted-foreground">
-              Tem que ser uma coisa com nome, que o crítico consiga abrir. Vazio: a skill propõe 2 ou 3 barras e para, sem construir.
-            </p>
+            <p className="text-xs text-muted-foreground">{t('easyExtras.qualityHint')}</p>
           </div>
         )}
       </div>
 
       <div className="space-y-3">
-        <Label>Ritmo do agente</Label>
+        <Label>{t('easyExtras.workflowLabel')}</Label>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {workflowModeOptions.map((option) => (
             <button
@@ -156,7 +150,7 @@ export function EasyExtras({ formData, updateField, toggleArrayField }: EasyExtr
       </div>
 
       <div className="space-y-3">
-        <Label>Precisa de login?</Label>
+        <Label>{t('easyExtras.authLabel')}</Label>
         <RadioGroup
           value={formData.hasAuth}
           onValueChange={(v) => updateField('hasAuth', v as 'sim' | 'nao')}
@@ -164,17 +158,17 @@ export function EasyExtras({ formData, updateField, toggleArrayField }: EasyExtr
         >
           <div className="flex items-center gap-2">
             <RadioGroupItem value="nao" id="easy-auth-nao" />
-            <Label htmlFor="easy-auth-nao">Não</Label>
+            <Label htmlFor="easy-auth-nao">{t('common.no')}</Label>
           </div>
           <div className="flex items-center gap-2">
             <RadioGroupItem value="sim" id="easy-auth-sim" />
-            <Label htmlFor="easy-auth-sim">Sim</Label>
+            <Label htmlFor="easy-auth-sim">{t('common.yes')}</Label>
           </div>
         </RadioGroup>
       </div>
 
       <div className="space-y-3">
-        <Label>Marque só o que importa</Label>
+        <Label>{t('easyExtras.featuresLabel')}</Label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {featureOptions.map((feature) => (
             <label key={feature.value} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -189,7 +183,7 @@ export function EasyExtras({ formData, updateField, toggleArrayField }: EasyExtr
       </div>
 
       <details className="rounded-2xl border border-dashed border-primary/20 p-4">
-        <summary className="cursor-pointer font-semibold">Mais detalhes (opcional)</summary>
+        <summary className="cursor-pointer font-semibold">{t('easyExtras.moreDetails')}</summary>
         <div className="mt-6">
           <SpecificModule
             appType={formData.appType}

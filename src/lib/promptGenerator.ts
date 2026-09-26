@@ -1,7 +1,7 @@
 import type { FormData, PromptTarget, Stack } from '@/types';
 import { collectedDataOptions } from '@/types';
 import { harnessLabel } from '@/lib/harnessGuide';
-import { generateKickoff } from '@/lib/vibeKit';
+import { generateKickoff } from '@/lib/agentKit';
 
 export function generatePromptText(data: FormData): string {
   return generateKickoff(data);
@@ -15,7 +15,7 @@ export function generateLegacyPromptText(data: FormData): string {
   let prompt = `# PROMPT PARA CRIAÇÃO DE APLICAÇÃO
 
 > **Gerado em:** ${hoje}
-> **Ferramenta:** PromptGen
+> **Ferramenta:** WebBrief
 > **Destino:** ${getPromptTargetLabel(data.promptTarget)}
 > **Prioridade:** as regras da Seção 7 valem sobre qualquer outra instrução.
 
@@ -100,7 +100,7 @@ ${data.notes?.trim() || 'Nenhuma'}
 
 Revise o prompt antes de enviar. A stack escolhida (${getStackLabel(data.stack)}) deve ser respeitada em todo o código.
 
-*PromptGen*`;
+*WebBrief* — https://vitorhub.com`;
 
   return prompt;
 }

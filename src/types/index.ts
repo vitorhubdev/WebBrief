@@ -20,7 +20,7 @@ export type PromptTarget =
   | 'crush'
   | 'dsh';
 
-export type WorkflowMode = 'vibe' | 'structured' | 'spec';
+export type WorkflowMode = 'rapid' | 'structured' | 'spec';
 
 // Interface principal do formulário
 export interface FormData {
@@ -696,10 +696,11 @@ export const presets: Preset[] = [
 ];
 
 // Opções para selects
+/** @deprecated Use getWorkflowModeOptions from @/i18n/options */
 export const workflowModeOptions: { value: WorkflowMode; label: string; desc: string }[] = [
-  { value: 'vibe', label: 'Vibe rápido', desc: 'Um chat, MVP agora. Ainda lê AGENTS.md e verifica no fim.' },
-  { value: 'structured', label: 'Vibe estruturado', desc: 'Uma tarefa, um contexto. Padrão para não estourar tokens.' },
-  { value: 'spec', label: 'Spec-driven', desc: 'Plano antes do código. Constitution, PLAN e tarefas.' },
+  { value: 'rapid', label: '', desc: '' },
+  { value: 'structured', label: '', desc: '' },
+  { value: 'spec', label: '', desc: '' },
 ];
 
 export const promptTargetOptions: { value: PromptTarget; label: string; desc: string; group: string }[] = [

@@ -6,6 +6,7 @@ import { GUIModule } from '@/components/modules/GUIModule';
 import { DockerModule } from '@/components/modules/DockerModule';
 import { APIModule } from '@/components/modules/APIModule';
 import type { FormData } from '@/types';
+import { useI18n } from '@/i18n/context';
 
 interface SpecificModuleProps {
   appType: string;
@@ -15,6 +16,8 @@ interface SpecificModuleProps {
 }
 
 export function SpecificModule({ appType, formData, updateField, toggleArrayField }: SpecificModuleProps) {
+  const { t } = useI18n();
+
   switch (appType) {
     case 'website':
       return <WebsiteModule formData={formData} updateField={updateField} toggleArrayField={toggleArrayField} />;
@@ -33,7 +36,7 @@ export function SpecificModule({ appType, formData, updateField, toggleArrayFiel
     default:
       return (
         <div className="text-center py-12 text-muted-foreground">
-          Selecione um tipo de aplicação para ver as configurações específicas
+          {t('specificModule.empty')}
         </div>
       );
   }

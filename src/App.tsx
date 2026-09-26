@@ -11,16 +11,22 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Code2, Layers, Cpu, Maximize2, Minimize2 } from 'lucide-react';
 import type { ProductPattern } from '@/types';
 import { tokenTips } from '@/lib/harnessGuide';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
-
-const steps = [
-  { id: 1, title: 'Modelo' },
-  { id: 2, title: 'Ideia' },
-  { id: 3, title: 'Ajustes' },
-];
+import { useI18n } from '@/i18n/context';
+import { getPatternDisplay } from '@/i18n/options';
 
 function App() {
+  const { t, locale } = useI18n();
+  const steps = useMemo(
+    () => [
+      { id: 1, title: t('steps.model') },
+      { id: 2, title: t('steps.idea') },
+      { id: 3, title: t('steps.adjustments') },
+    ],
+    [t],
+  );
+
   const {
     formData,
     generatedPrompt,
@@ -35,7 +41,7 @@ function App() {
     exportConfig,
     exportKitFile,
     exportKitAll,
-    vibeKit,
+    agentKit,
     importConfig,
     clearSavedData,
     promptStats,
@@ -85,7 +91,8 @@ function App() {
 
   const handleLoadPattern = (pattern: ProductPattern) => {
     loadPattern(pattern);
-    toast.success(`Modelo “${pattern.name}” aplicado`);
+    const display = getPatternDisplay(locale, pattern.id, { name: pattern.name, blurb: pattern.blurb });
+    toast.success(t('generator.patternApplied', { name: display.name }));
   };
 
   const renderStep = () => {
@@ -125,18 +132,36 @@ function App() {
 
   const handleGenerate = () => {
     if (invalidSteps.length > 0) {
-      toast.error('Preencha os campos obrigatórios marcados em vermelho.');
+      toast.error(t('generator.fillRequired'));
       return;
     }
     generatePrompt();
     setIsFullScreen(false);
-    toast.success('Kit gerado');
+    toast.success(t('generator.kitGenerated'));
   };
 
   const handleReset = () => {
     setIsFullScreen(false);
     resetForm();
   };
+
+  const featureCards = [
+    {
+      icon: <Code2 className="w-5 h-5" />,
+      title: t('features.skills.title'),
+      desc: t('features.skills.desc'),
+    },
+    {
+      icon: <Layers className="w-5 h-5" />,
+      title: t('features.rhythms.title'),
+      desc: t('features.rhythms.desc'),
+    },
+    {
+      icon: <Cpu className="w-5 h-5" />,
+      title: t('features.harness.title'),
+      desc: t('features.harness.desc'),
+    },
+  ];
 
   if (showResult) {
     return (
@@ -146,7 +171,7 @@ function App() {
           <div className="max-w-3xl mx-auto">
             <Resultado
               prompt={generatedPrompt}
-              kit={vibeKit}
+              kit={agentKit}
               onReset={handleReset}
               onExportKitFile={exportKitFile}
               onExportKitAll={exportKitAll}
@@ -164,43 +189,27 @@ function App() {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-full"
       >
-        Pular para o conteúdo principal
+        {t('common.skipToContent')}
       </a>
 
       <Header onClear={clearSavedData} onExport={exportConfig} onImport={importConfig} />
 
       <main id="main-content" role="main" className="flex-1 w-full">
         <section id="hero" className="text-center px-5 pt-20 pb-16 sm:pt-28 sm:pb-20">
-          <p className="text-[17px] font-medium text-primary mb-4">Para quem nunca programou</p>
+          <p className="text-[17px] font-medium text-primary mb-4">{t('hero.eyebrow')}</p>
           <h1 className="display text-[clamp(2.5rem,8vw,5rem)] text-balance max-w-4xl mx-auto">
-            Descreva a ideia.
+            {t('hero.titleLine1')}
             <br />
-            O agente constrói.
+            {t('hero.titleLine2')}
           </h1>
           <p className="mt-6 text-[17px] text-muted-foreground max-w-xl mx-auto leading-[1.47]">
-            Poucos minutos para travar o pronto. O agente gasta as horas. Você não reescreve o prompt no meio.
+            {t('hero.subtitle')}
           </p>
         </section>
 
         <section id="features" aria-label="Recursos principais" className="band py-20">
           <div className="container grid grid-cols-1 md:grid-cols-3 gap-5">
-            {[
-              {
-                icon: <Code2 className="w-5 h-5" />,
-                title: 'Skills do caso',
-                desc: 'Landing, loja, SaaS, blog, chat, app, API, CLI, desktop — SKILL.md adaptável.',
-              },
-              {
-                icon: <Layers className="w-5 h-5" />,
-                title: 'Três ritmos',
-                desc: 'Vibe rápido, estruturado ou spec-driven. O mesmo formulário.',
-              },
-              {
-                icon: <Cpu className="w-5 h-5" />,
-                title: 'Harness e tokens',
-                desc: 'Pi, Codex, Claude Code, Antigravity (/boost) e outros. Jev opcional só para decidir, não para escrever.',
-              },
-            ].map((feature) => (
+            {featureCards.map((feature) => (
               <article key={feature.title} className="p-7 rounded-[28px] bg-card">
                 <div className="text-foreground mb-5">{feature.icon}</div>
                 <h3 className="text-[21px] font-semibold leading-tight">{feature.title}</h3>
@@ -213,7 +222,7 @@ function App() {
         <section
           id="generator"
           ref={generatorRef}
-          aria-label="Gerador de Prompt"
+          aria-label={t('generator.aria')}
           className={`container py-20 scroll-mt-16 ${isFullScreen ? 'fixed inset-0 z-[100] max-w-none bg-background overflow-y-auto py-6' : ''}`}
         >
           <div className={`mx-auto max-w-3xl rounded-[28px] bg-secondary overflow-hidden ${isFullScreen ? 'min-h-full' : ''}`}>
@@ -231,7 +240,7 @@ function App() {
                 size="icon"
                 onClick={() => setIsFullScreen(!isFullScreen)}
                 className="text-muted-foreground"
-                aria-label={isFullScreen ? 'Sair da tela cheia' : 'Modo concentração'}
+                aria-label={isFullScreen ? t('header.fullscreenExit') : t('header.fullscreenEnter')}
               >
                 {isFullScreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
               </Button>
@@ -240,24 +249,24 @@ function App() {
             <div className="bg-card mx-3 mb-3 rounded-[22px] px-6 sm:px-10 py-10 min-h-[460px]">
               <div className="mb-8 space-y-2">
                 <h2 className="text-[32px] sm:text-[40px] font-semibold leading-none">
-                  {currentStep === 1 && 'Escolha um modelo'}
-                  {currentStep === 2 && 'Conte a ideia'}
-                  {currentStep === 3 && 'Harness e ajustes'}
+                  {currentStep === 1 && t('generator.step1Title')}
+                  {currentStep === 2 && t('generator.step2Title')}
+                  {currentStep === 3 && t('generator.step3Title')}
                 </h2>
                 <p className="text-[17px] text-muted-foreground">
-                  {currentStep === 1 && 'Toque num cartão. As etiquetas são as skills do zip.'}
-                  {currentStep === 2 && 'Nome, o que faz, quem usa, o que a pessoa clica.'}
-                  {currentStep === 3 && 'Escolha onde o kit vai rodar. O resto pode ficar no padrão.'}
+                  {currentStep === 1 && t('generator.step1Desc')}
+                  {currentStep === 2 && t('generator.step2Desc')}
+                  {currentStep === 3 && t('generator.step3Desc')}
                 </p>
               </div>
               {renderStep()}
             </div>
 
             <div className="px-6 sm:px-8 py-3 text-[12px] text-muted-foreground flex flex-wrap gap-x-4 gap-y-1">
-              <span>{promptStats.kitFiles} arquivos</span>
-              <span>~{promptStats.kitTokens} tokens</span>
+              <span>{promptStats.kitFiles} {t('common.files')}</span>
+              <span>~{promptStats.kitTokens} {t('common.tokens')}</span>
               <details>
-                <summary className="cursor-pointer text-primary">Rascunho</summary>
+                <summary className="cursor-pointer text-primary">{t('common.draft')}</summary>
                 <pre className="mt-2 max-h-48 overflow-auto rounded-2xl bg-card p-3 text-[11px] leading-relaxed whitespace-pre-wrap font-mono">
                   {promptStats.preview}
                 </pre>
@@ -267,15 +276,15 @@ function App() {
             <div className="px-6 sm:px-8 pb-6 flex items-center justify-between">
               <Button variant="ghost" onClick={handlePrev} disabled={currentStep === 1} className="h-11 px-5">
                 <ChevronLeft className="w-4 h-4" />
-                Anterior
+                {t('common.previous')}
               </Button>
               {currentStep === 3 ? (
                 <Button onClick={handleGenerate} className="h-11 px-7">
-                  Gerar kit
+                  {t('common.generateKit')}
                 </Button>
               ) : (
                 <Button onClick={handleNext} className="h-11 px-7" disabled={!getStepValidity(currentStep)}>
-                  Continuar
+                  {t('common.continue')}
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               )}
@@ -286,12 +295,12 @@ function App() {
         <section id="tips" aria-label="Economia de tokens" className="band py-20">
           <div className="container grid grid-cols-1 md:grid-cols-2 gap-5">
             <article className="p-8 rounded-[28px] bg-card space-y-4">
-              <h3 className="text-[24px] font-semibold">Economia de tokens</h3>
+              <h3 className="text-[24px] font-semibold">{t('tips.tokensTitle')}</h3>
               <p className="text-[17px] text-muted-foreground leading-relaxed">
-                O modelo escreve. O harness decide o que entra no contexto. Estas dicas seguem o harness marcado no passo 3.
+                {t('tips.tokensIntro')}
               </p>
               <ul className="space-y-2 text-[15px]">
-                {tokenTips(formData).map((tip) => (
+                {tokenTips(formData, locale).map((tip) => (
                   <li key={tip} className="text-foreground">
                     {tip}
                   </li>
@@ -299,15 +308,15 @@ function App() {
               </ul>
             </article>
             <article className="p-8 rounded-[28px] bg-card space-y-4">
-              <h3 className="text-[24px] font-semibold">Ralph ou Gauntlet</h3>
+              <h3 className="text-[24px] font-semibold">{t('tips.loopsTitle')}</h3>
               <p className="text-[17px] text-muted-foreground leading-relaxed">
-                Ralph repete o mesmo pedido até o teste passar. Gauntlet põe um crítico de contexto limpo contra uma barra com nome — a página da Linear, a CLI jq — e só para quando a nossa ganha, ou quando você manda parar.
+                {t('tips.loopsBody')}
               </p>
-              <h3 className="text-[24px] font-semibold">Jev não é o agente</h3>
+              <h3 className="text-[24px] font-semibold">{t('tips.jevTitle')}</h3>
               <p className="text-[17px] text-muted-foreground leading-relaxed">
-                Jev classifica: qual skill abrir, qual ferramenta cabe, se vale o modelo caro. O código sai do Pi, do Codex, do Claude Code ou de quem você escolheu.
+                {t('tips.jevBody')}
               </p>
-              <p className="text-[14px] text-muted-foreground">ECONOMIA.md entra no zip · skills sob demanda · uma tarefa por contexto</p>
+              <p className="text-[14px] text-muted-foreground">{t('tips.footerNote')}</p>
             </article>
           </div>
         </section>
@@ -315,15 +324,23 @@ function App() {
 
       <footer role="contentinfo" className="w-full bg-secondary border-t border-border/60">
         <div className="container py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[12px] text-muted-foreground">
-          <span className="font-medium text-foreground">PromptGen</span>
+          <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
+            <span className="font-medium text-foreground">{t('brand.name')}</span>
+            <span className="text-muted-foreground">
+              <a href="https://vitorhub.com" className="hover:text-foreground" target="_blank" rel="noopener noreferrer">
+                {t('brand.byVitorHub')}
+              </a>
+            </span>
+          </div>
           <div className="flex gap-6">
-            <a href="#">Termos</a>
-            <a href="#">Privacidade</a>
-            <a href="https://github.com/vitorhubdev" target="_blank" rel="noopener noreferrer">
-              GitHub
+            <a href="https://vitorhub.com" target="_blank" rel="noopener noreferrer">
+              {t('footer.author')} · {t('footer.site')}
+            </a>
+            <a href="https://github.com/vitorhubdev/WebBrief" target="_blank" rel="noopener noreferrer">
+              {t('footer.github')}
             </a>
           </div>
-          <span>© {new Date().getFullYear()} MIT</span>
+          <span>© {new Date().getFullYear()} {t('footer.mit')}</span>
         </div>
       </footer>
     </div>

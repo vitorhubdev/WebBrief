@@ -1,4 +1,5 @@
 import { Check, AlertCircle } from 'lucide-react';
+import { useI18n } from '@/i18n/context';
 
 interface Step {
   id: number;
@@ -13,6 +14,8 @@ interface StepIndicatorProps {
 }
 
 export function StepIndicator({ steps, currentStep, onStepClick, invalidSteps = [] }: StepIndicatorProps) {
+  const { t } = useI18n();
+
   return (
     <div className="flex items-center justify-center py-4 overflow-x-auto no-scrollbar">
       <div className="flex items-center gap-3">
@@ -28,7 +31,11 @@ export function StepIndicator({ steps, currentStep, onStepClick, invalidSteps = 
                 type="button"
                 onClick={() => onStepClick?.(step.id)}
                 aria-current={isActive ? 'step' : undefined}
-                aria-label={`Etapa ${step.id}: ${step.title}${isInvalid ? ' (incompleta)' : ''}`}
+                aria-label={t('steps.stepAria', {
+                  id: step.id,
+                  title: step.title,
+                  invalid: isInvalid ? t('steps.incomplete') : '',
+                })}
                 className="flex flex-col items-center group cursor-pointer border-none bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg"
               >
                 <div

@@ -5,8 +5,10 @@ import { Check, Copy, RotateCcw, Download, FolderDown } from 'lucide-react';
 import type { FormData } from '@/types';
 import { harnessLabel, tokenTips } from '@/lib/harnessGuide';
 import { loopLabel } from '@/lib/loopKit';
-import type { KitFile } from '@/lib/vibeKit';
+import type { KitFile } from '@/lib/agentKit';
 import { toast } from 'sonner';
+import { useI18n } from '@/i18n/context';
+import { workflowModeShortLabel } from '@/i18n/options';
 
 interface ResultadoProps {
   prompt: string;
@@ -18,21 +20,36 @@ interface ResultadoProps {
 }
 
 export function Resultado({ prompt, kit, onReset, onExportKitFile, onExportKitAll, formData }: ResultadoProps) {
+  const { locale, t } = useI18n();
   const [copied, setCopied] = useState(false);
   const [zipping, setZipping] = useState(false);
   const [activeId, setActiveId] = useState(kit[0]?.id || 'howto');
   const active = kit.find((f) => f.id === activeId) || kit[0];
   const text = active?.content || prompt;
 
+  const mode = workflowModeShortLabel(locale, formData.workflowMode || 'structured');
+  const harness = harnessLabel(formData.promptTarget, locale);
+  const jev = formData.useJev ? t('resultado.jevSuffix') : '';
+  const loop =
+    formData.loopMode === 'ralph' || formData.loopMode === 'gauntlet'
+      ? ` · ${loopLabel(formData.loopMode)}`
+      : '';
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
-      toast.success(`${active?.path || 'Arquivo'} copiado`);
+      toast.success(t('resultado.copySuccess', { path: active?.path || 'file' }));
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error('Não foi possível copiar');
+      toast.error(t('resultado.copyError'));
     }
+  };
+
+  const groupLabels = {
+    contract: t('resultado.groupContract'),
+    skills: t('resultado.groupSkills'),
+    spec: t('resultado.groupSpec'),
   };
 
   return (
@@ -40,37 +57,36 @@ export function Resultado({ prompt, kit, onReset, onExportKitFile, onExportKitAl
       <div className="rounded-[28px] bg-card overflow-hidden">
         <header className="p-8 sm:p-10">
           <div className="space-y-2">
-              <h2 className="text-[32px] sm:text-[40px] font-semibold leading-none">Kit pronto</h2>
+              <h2 className="text-[32px] sm:text-[40px] font-semibold leading-none">{t('resultado.title')}</h2>
               <p className="text-muted-foreground font-medium">
-                {kit.length} arquivos no preview · zip com prompt, skills e regras do esquema{' '}
-                {formData.workflowMode === 'vibe' ? 'vibe' : formData.workflowMode === 'spec' ? 'spec-driven' : 'estruturado'}
-                {' · '}
-                {harnessLabel(formData.promptTarget)}
-                {formData.useJev ? ' · Jev só para decisão' : ''}
-                {formData.loopMode === 'ralph' || formData.loopMode === 'gauntlet'
-                  ? ` · ${loopLabel(formData.loopMode)}`
-                  : ''}
+                {t('resultado.previewMeta', {
+                  count: kit.length,
+                  mode,
+                  harness,
+                  jev,
+                  loop,
+                })}
               </p>
           </div>
         </header>
 
         <div className="p-6 sm:p-10 space-y-6">
-          {(['Contrato', 'Skills', 'Spec'] as const).map((group) => {
-            const files =
-              group === 'Skills'
-                ? kit.filter((f) => f.path.includes('skills/') || f.id === 'antislop')
-                : group === 'Spec'
-                  ? kit.filter((f) => ['spec', 'tasks', 'constitution', 'plan'].includes(f.id))
-                  : kit.filter(
+          {(
+            [
+              { key: 'contract' as const, files: kit.filter(
                       (f) =>
                         !f.path.includes('skills/') &&
                         f.id !== 'antislop' &&
                         !['spec', 'tasks', 'constitution', 'plan'].includes(f.id),
-                    );
+                    ) },
+              { key: 'skills' as const, files: kit.filter((f) => f.path.includes('skills/') || f.id === 'antislop') },
+              { key: 'spec' as const, files: kit.filter((f) => ['spec', 'tasks', 'constitution', 'plan'].includes(f.id)) },
+            ] as const
+          ).map(({ key, files }) => {
             if (!files.length) return null;
             return (
-              <div key={group} className="space-y-2">
-                <p className="text-[13px] text-muted-foreground">{group}</p>
+              <div key={key} className="space-y-2">
+                <p className="text-[13px] text-muted-foreground">{groupLabels[key]}</p>
                 <div className="flex flex-wrap gap-2">
                   {files.map((file) => (
                     <Button
@@ -101,7 +117,7 @@ export function Resultado({ prompt, kit, onReset, onExportKitFile, onExportKitAl
             value={text}
             readOnly
             className="min-h-[420px] font-mono text-sm bg-secondary border-0 rounded-[20px] p-6 resize-none leading-relaxed"
-            aria-label={active?.path || 'Arquivo do kit'}
+            aria-label={t('resultado.fileAria')}
           />
 
           <div className="flex flex-wrap items-center gap-3">
@@ -112,16 +128,16 @@ export function Resultado({ prompt, kit, onReset, onExportKitFile, onExportKitAl
                 setZipping(true);
                 try {
                   await onExportKitAll();
-                  toast.success('Kit .zip baixado — descompacte na pasta do projeto');
+                  toast.success(t('resultado.zipSuccess'));
                 } catch {
-                  toast.error('Não foi possível gerar o zip');
+                  toast.error(t('resultado.zipError'));
                 } finally {
                   setZipping(false);
                 }
               }}
             >
               <FolderDown className="w-5 h-5" />
-              {zipping ? 'Montando zip…' : 'Baixar kit .zip'}
+              {zipping ? t('resultado.zipping') : t('resultado.zipButton')}
             </Button>
             <Button
               onClick={handleCopy}
@@ -129,7 +145,7 @@ export function Resultado({ prompt, kit, onReset, onExportKitFile, onExportKitAl
               className={`h-11 px-6 ${copied ? 'bg-foreground text-background' : ''}`}
             >
               {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-              Copiar arquivo
+              {t('resultado.copyFile')}
             </Button>
             <Button
               variant="outline"
@@ -137,11 +153,11 @@ export function Resultado({ prompt, kit, onReset, onExportKitFile, onExportKitAl
               onClick={() => active && onExportKitFile(active)}
             >
               <Download className="w-5 h-5" />
-              Baixar este
+              {t('resultado.downloadOne')}
             </Button>
             <Button variant="ghost" className="h-11 px-6" onClick={onReset}>
               <RotateCcw className="w-5 h-5" />
-              Novo
+              {t('resultado.newBrief')}
             </Button>
           </div>
         </div>
@@ -149,28 +165,26 @@ export function Resultado({ prompt, kit, onReset, onExportKitFile, onExportKitAl
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <article className="p-8 rounded-[28px] bg-card space-y-4">
-          <h3 className="text-[21px] font-semibold">Como usar hoje</h3>
+          <h3 className="text-[21px] font-semibold">{t('resultado.howToTitle')}</h3>
           <ol className="space-y-3 list-none text-sm text-muted-foreground font-medium">
-            <li>1. Crie a pasta do repo e <span className="text-foreground">descompacte o .zip</span> nela (pastas inclusive).</li>
-            <li>2. Abra a pasta no agente que você já usa (chat ou IDE).</li>
-            <li>3. Cole o <span className="text-foreground">Kickoff</span> como primeira mensagem.</li>
-            <li>4. No modo spec, não peça código até o plano estar claro.</li>
+            <li>{t('resultado.howTo1')}</li>
+            <li>{t('resultado.howTo2')}</li>
+            <li>{t('resultado.howTo3')}</li>
+            <li>{t('resultado.howTo4')}</li>
           </ol>
         </article>
         <article className="p-8 rounded-[28px] bg-card space-y-4">
-          <h3 className="text-[21px] font-semibold">Economia neste kit</h3>
+          <h3 className="text-[21px] font-semibold">{t('resultado.economyTitle')}</h3>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            {tokenTips(formData).map((tip) => (
+            {tokenTips(formData, locale).map((tip) => (
               <li key={tip}>{tip}</li>
             ))}
           </ul>
         </article>
         <article className="p-8 rounded-[28px] bg-card space-y-4 md:col-span-2">
-          <h3 className="text-[21px] font-semibold">Por que um kit</h3>
+          <h3 className="text-[21px] font-semibold">{t('resultado.whyKitTitle')}</h3>
           <p className="text-[15px] text-muted-foreground leading-relaxed">
-            Agentes leem arquivos do repo. Um Markdown gigante no chat some no contexto.
-            AGENTS.md é o contrato portátil. ANTI-SLOP e skills valem em qualquer ferramenta.
-            SPEC/TASKS evitam o agente inventar requisito.
+            {t('resultado.whyKitBody')}
           </p>
         </article>
       </div>

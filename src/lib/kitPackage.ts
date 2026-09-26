@@ -1,10 +1,10 @@
 import type { FormData } from '@/types';
 import { harnessLabel } from '@/lib/harnessGuide';
 import { generateLegacyPromptText, generateTOON } from '@/lib/promptGenerator';
-import { generateVibeKit, type KitFile } from '@/lib/vibeKit';
+import { generateAgentKit, type KitFile } from '@/lib/agentKit';
 
 function modeLabel(mode: FormData['workflowMode']): string {
-  if (mode === 'vibe') return 'vibe';
+  if (mode === 'rapid') return 'rápido';
   if (mode === 'spec') return 'spec-driven';
   return 'estruturado';
 }
@@ -17,7 +17,7 @@ function generateManifest(data: FormData, files: KitFile[]): string {
   const list = files.map((f) => `- \`${f.path}\` — ${f.description}`).join('\n');
   return `# Manifesto do kit — ${data.projectName || 'projeto'}
 
-Pacote gerado pelo PromptGen. Descompacte **na raiz** da pasta do projeto.
+Pacote gerado pelo WebBrief (https://vitorhub.com). Descompacte **na raiz** da pasta do projeto.
 
 ## Esquema deste zip
 - Ritmo: **${modeLabel(data.workflowMode)}**
@@ -43,7 +43,7 @@ ${list}
 }
 
 export function assembleDownloadPackage(data: FormData): KitFile[] {
-  const kit = generateVibeKit(data);
+  const kit = generateAgentKit(data);
   const extras: KitFile[] = [
     {
       id: 'prompt-full',
@@ -61,9 +61,9 @@ export function assembleDownloadPackage(data: FormData): KitFile[] {
     },
     {
       id: 'config',
-      path: 'promptgen-config.json',
+      path: 'webbrief-config.json',
       label: 'Config',
-      description: 'JSON para reimportar no PromptGen',
+      description: 'JSON para reimportar no WebBrief',
       content: `${JSON.stringify(data, null, 2)}\n`,
     },
   ];

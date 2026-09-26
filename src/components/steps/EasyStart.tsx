@@ -2,14 +2,14 @@ import { Globe, Smartphone, Terminal, Monitor, Server, Sparkles, User, Cpu, Layo
 import { Button } from '@/components/ui/button';
 import type { AppType, ProductPattern, Stack } from '@/types';
 import {
-  appTypeOptions,
   productPatterns,
   recommendedFramework,
   recommendedStack,
   stackCompatibility,
-  stackOptions,
 } from '@/types';
 import { patternSkillChips } from '@/lib/useCaseSkills';
+import { useI18n } from '@/i18n/context';
+import { getAppTypeOptions, getPatternDisplay, getStackOptions } from '@/i18n/options';
 
 interface EasyStartProps {
   selectedType: AppType | '';
@@ -44,27 +44,28 @@ export function EasyStart({
   onLoadPattern,
   onUpdateFramework,
 }: EasyStartProps) {
+  const { locale, t } = useI18n();
+  const appTypeOptions = getAppTypeOptions(locale);
   const compatible = selectedType
-    ? stackOptions.filter((opt) => stackCompatibility[selectedType].includes(opt.value as Stack))
+    ? getStackOptions(locale, stackCompatibility[selectedType])
     : [];
   const rec = selectedType ? recommendedStack[selectedType] : null;
+  const recLabel = rec ? getStackOptions(locale, [rec])[0]?.label : '';
 
   return (
     <div className="space-y-10">
       <div className="rounded-[20px] bg-secondary p-5 text-[15px] leading-relaxed">
-        <p className="font-semibold text-foreground">Não precisa saber programar.</p>
-        <p className="text-muted-foreground mt-1">
-          Escolha um modelo. Cada um já traz skills do caso (conversão, checkout, auth, CLI…).
-          Você descreve a ideia; o zip adapta as skills ao seu texto.
-        </p>
+        <p className="font-semibold text-foreground">{t('easyStart.introTitle')}</p>
+        <p className="text-muted-foreground mt-1">{t('easyStart.introBody')}</p>
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-xl font-bold">O que você quer que exista?</h3>
+        <h3 className="text-xl font-bold">{t('easyStart.whatBuild')}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {productPatterns.map((pattern) => {
             const Icon = iconMap[pattern.icon] || Sparkles;
             const active = patternId === pattern.id;
+            const display = getPatternDisplay(locale, pattern.id, { name: pattern.name, blurb: pattern.blurb });
             return (
               <button
                 key={pattern.id}
@@ -79,8 +80,8 @@ export function EasyStart({
                     <Icon className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="font-bold">{pattern.name}</p>
-                    <p className="text-sm text-muted-foreground mt-1">{pattern.blurb}</p>
+                    <p className="font-bold">{display.name}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{display.blurb}</p>
                     <p className="text-[12px] text-muted-foreground mt-2">
                       {pattern.framework} · {pattern.stack}
                     </p>
@@ -103,7 +104,7 @@ export function EasyStart({
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-lg font-bold">Ou só o tipo, se nenhum modelo serve</h3>
+        <h3 className="text-lg font-bold">{t('easyStart.orType')}</h3>
         <div className="flex flex-wrap gap-2">
           {appTypeOptions.map((option) => (
             <Button
@@ -122,10 +123,10 @@ export function EasyStart({
       {selectedType && (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h3 className="text-lg font-bold">Linguagem</h3>
-            {rec && (
+            <h3 className="text-lg font-bold">{t('easyStart.language')}</h3>
+            {rec && recLabel && (
               <Button type="button" variant="secondary" size="sm" className="rounded-xl" onClick={() => onSelectStack(rec)}>
-                Não sei — usar {stackOptions.find((s) => s.value === rec)?.label}
+                {t('easyStart.dontKnow', { stack: recLabel })}
               </Button>
             )}
           </div>
@@ -147,7 +148,9 @@ export function EasyStart({
                   }`}
                 >
                   <span className="font-semibold">{option.label}</span>
-                  {isRec && <span className="ml-2 text-[10px] uppercase text-primary font-bold">recomendado</span>}
+                  {isRec && (
+                    <span className="ml-2 text-[10px] uppercase text-primary font-bold">{t('common.recommended')}</span>
+                  )}
                   <p className="text-xs text-muted-foreground mt-1">{option.desc}</p>
                 </button>
               );

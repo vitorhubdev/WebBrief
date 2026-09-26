@@ -12,7 +12,7 @@ export interface KitFile {
   content: string;
 }
 
-export function generateVibeKit(data: FormData): KitFile[] {
+export function generateAgentKit(data: FormData): KitFile[] {
   const mode = data.workflowMode || 'structured';
   const target = data.promptTarget || 'generic';
   const files: KitFile[] = [
@@ -221,7 +221,7 @@ export function generateKickoff(data: FormData): string {
   const name = data.projectName || 'o projeto';
   const dest = getPromptTargetLabel(data.promptTarget);
 
-  if (mode === 'vibe') {
+  if (mode === 'rapid') {
     return `# Kickoff — ${name}
 
 Você está no workspace. Leia \`AGENTS.md\` e implemente o MVP agora.
@@ -539,7 +539,7 @@ Seguir \`TASKS.md\`. Não pular T1.
 
 function generateCursorRule(data: FormData): string {
   return `---
-description: Regras do projeto ${data.projectName || 'PromptGen'}
+description: Regras do projeto ${data.projectName || 'WebBrief'}
 alwaysApply: true
 ---
 
@@ -657,7 +657,7 @@ function labelStack(data: FormData): string {
 }
 
 function modeLabel(mode: WorkflowMode): string {
-  if (mode === 'vibe') return 'vibe (rápido, kickoff + AGENTS.md)';
+  if (mode === 'rapid') return 'rápido (kickoff + AGENTS.md)';
   if (mode === 'spec') return 'spec-driven (constitution → spec → plan → tasks)';
   return 'estruturado (spec curta + tasks + verificação)';
 }
